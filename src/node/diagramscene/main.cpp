@@ -44,7 +44,6 @@
 
 int main(int argv, char *args[])
 {
-    //add comments here,2nd revison.
     Q_INIT_RESOURCE(diagramscene);
 
     QApplication app(argv, args);
