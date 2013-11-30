@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 
+/* add dummy comment to test git with Qt Creator */
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
