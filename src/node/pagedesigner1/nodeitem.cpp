@@ -8,7 +8,7 @@
 #include "global.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include <QPointF>
-#if 1
+
 using namespace SmileyConst;
 //gobal function to draw node elements
 void DrawNodeItems(NodeItem *itnode,const QPointF &point)
@@ -231,5 +231,4 @@ QVariant NodeItem::itemChange(GraphicsItemChange change,
         return QGraphicsItem::itemChange(change, value);
     }
 }
-#endif
 #endif
