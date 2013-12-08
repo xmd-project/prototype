@@ -1,18 +1,18 @@
 CONFIG	     += console debug
 QT	     += svg
-HEADERS	     += ../aqp/alt_key.hpp \
+HEADERS	     += aqp/alt_key.hpp \
     nodeitem.hpp
-SOURCES	     += ../aqp/alt_key.cpp \
+SOURCES	     += aqp/alt_key.cpp \
     nodeitem.cpp
-HEADERS	     += ../aqp/kuhn_munkres.hpp
-SOURCES	     += ../aqp/kuhn_munkres.cpp
-HEADERS	     += ../aqp/aqp.hpp
-SOURCES	     += ../aqp/aqp.cpp
-INCLUDEPATH  += ../aqp
-HEADERS	     += ../textedit/textedit.hpp
-SOURCES	     += ../textedit/textedit.cpp
-RESOURCES    += ../textedit/textedit.qrc
-INCLUDEPATH  += ../textedit
+HEADERS	     += aqp/kuhn_munkres.hpp
+SOURCES	     += aqp/kuhn_munkres.cpp
+HEADERS	     += aqp/aqp.hpp
+SOURCES	     += aqp/aqp.cpp
+INCLUDEPATH  += aqp
+HEADERS	     += textedit/textedit.hpp
+SOURCES	     += textedit/textedit.cpp
+RESOURCES    += textedit/textedit.qrc
+INCLUDEPATH  += textedit
 HEADERS	     += global.hpp
 SOURCES	     += global.cpp
 HEADERS	     += swatch.hpp
