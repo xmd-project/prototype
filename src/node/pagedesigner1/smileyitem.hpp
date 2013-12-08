@@ -92,8 +92,6 @@ public slots:
     void edit();
 
 protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) { edit(); }
     void contextMenuEvent(QGraphicsSceneContextMenuEvent*) { edit(); }
 
@@ -108,6 +106,8 @@ private:
     QAction *createMenuAction(QMenu *menu, const QIcon &icon,
             const QString &text, bool checked,
             QActionGroup *group=0, const QVariant &data=QVariant());
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
 
     Face m_face;
     QPen m_pen;

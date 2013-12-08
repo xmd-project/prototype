@@ -55,9 +55,9 @@ signals:
     void dirty();
 
 protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) { edit(); }
     QVariant itemChange(GraphicsItemChange change,
                         const QVariant &value);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent*) { edit(); }
 
 private:
     void updateTransform();

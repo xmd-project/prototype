@@ -63,12 +63,12 @@ public slots:
     void setShear(double shearHorizontal, double shearVertical);
 
 protected:
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value);
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    QVariant itemChange(GraphicsItemChange change,
+                        const QVariant &value);
 
 private:
     void updateTransform();

@@ -813,7 +813,7 @@ void MainWindow::editAddNodeItem()
     int xsize=scene->width();
     int ysize=scene->height();
     //nodeitem = new QGraphicsItemGroup;
-    nodeitem = new NodeItem(QPoint(xsize/2,ysize/2), scene);
+    nodeitem = new NodeItem(QPointF(xsize/2,ysize/2), scene);
 #if 0
     TextItemDialog dialog(0, QPoint(xsize/2,ysize/2), scene, this);
       if (dialog.exec())
@@ -825,13 +825,13 @@ void MainWindow::editAddNodeItem()
     nodeitem->addToGroup(dynamic_cast<QGraphicsItem*>(itemSmile));
     nodeitem->addToGroup(dynamic_cast<QGraphicsItem*>(itemTxt));
 #endif
-#if 0
+#if 1
     //delete if block for avoid crash
     if (nodeitem) {
         connectItem(dynamic_cast<QObject*>(nodeitem));
         setDirty(true);
     }
-#else
+//#else
     //it works but cannot edit
     scene->addItem(nodeitem);
     nodeitem->setVisible(1);
@@ -840,7 +840,7 @@ void MainWindow::editAddNodeItem()
 
 void MainWindow::connectItem(QObject *item)
 {
-    (item, SIGNAL(dirty()), this, SLOT(setDirty()));
+    connect(item, SIGNAL(dirty()), this, SLOT(setDirty()));
     const QMetaObject *metaObject = item->metaObject();
     if (metaObject->indexOfProperty("brush") > -1)
         connect(brushWidget, SIGNAL(brushChanged(const QBrush&)),
