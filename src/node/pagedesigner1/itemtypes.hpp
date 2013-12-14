@@ -19,4 +19,5 @@ const int BoxItemType = QGraphicsItem::UserType + 1;
 const int SmileyItemType = QGraphicsItem::UserType + 2;
 const int TextItemType = QGraphicsItem::UserType + 3;
 const int NodeItemType = QGraphicsItem::UserType + 4;
+const int AttachmentItemType = QGraphicsItem::UserType + 5;
 #endif // ITEMTYPES_HPP

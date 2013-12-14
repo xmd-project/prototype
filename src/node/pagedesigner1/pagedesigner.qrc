@@ -29,5 +29,7 @@
         <file alias="smileyneutral.png">images/smileyneutral.png</file>
         <file alias="icon.png">images/icon.png</file>
         <file alias="editaddnode.png">images/editaddnode.png</file>
+        <file alias="attachment.png">images/attachment.png</file>
+        <file alias="weblink.png">images/weblink.png</file>
     </qresource>
 </RCC>

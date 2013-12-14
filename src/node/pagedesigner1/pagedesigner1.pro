@@ -1,9 +1,11 @@
 CONFIG	     += console debug
 QT	     += svg
 HEADERS	     += aqp/alt_key.hpp \
-    nodeitem.hpp
+    nodeitem.hpp \
+    attachmentitem.h
 SOURCES	     += aqp/alt_key.cpp \
-    nodeitem.cpp
+    nodeitem.cpp \
+    attachmentitem.cpp
 HEADERS	     += aqp/kuhn_munkres.hpp
 SOURCES	     += aqp/kuhn_munkres.cpp
 HEADERS	     += aqp/aqp.hpp

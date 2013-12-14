@@ -48,7 +48,7 @@ public:
     double angle() const { return m_angle; }
     double shearHorizontal() const { return m_shearHorizontal; }
     double shearVertical() const { return m_shearVertical; }
-
+    bool contains(const QPointF &point) const;
 signals:
     void dirty();
 

@@ -1,6 +1,7 @@
 INPUT(
 ./release/alt_key.o
 ./release/nodeitem.o
+./release/attachmentitem.o
 ./release/kuhn_munkres.o
 ./release/aqp.o
 ./release/textedit.o

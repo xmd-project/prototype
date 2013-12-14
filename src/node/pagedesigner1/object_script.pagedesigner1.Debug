@@ -1,6 +1,7 @@
 INPUT(
 ./debug/alt_key.o
 ./debug/nodeitem.o
+./debug/attachmentitem.o
 ./debug/kuhn_munkres.o
 ./debug/aqp.o
 ./debug/textedit.o
