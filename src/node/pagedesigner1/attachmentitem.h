@@ -3,6 +3,7 @@
 
 #include <QGraphicsPixmapItem>
 #include <QString>
+#include <QGraphicsSceneMouseEvent>
 class AttachmentItem : public QGraphicsPixmapItem
 {
 public:
@@ -16,7 +17,7 @@ public:
 private:
     QString m_fileName;
 protected:
-    void mousePressEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 };
 

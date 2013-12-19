@@ -17,6 +17,7 @@
 #include <ctime>
 #include <QtWidgets> // added for Qt5
 
+#include "boxitem.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -32,5 +33,16 @@ int main(int argc, char *argv[])
     qsrand(static_cast<uint>(time(0)));
     MainWindow window;
     window.show();
+    //test proxy widget
+#if 0
+QTabWidget *tabWidget = new QTabWidget;
+QGraphicsScene scene;
+BoxItem *itemBox = new BoxItem(QRect(QPoint(1,1), QSize(30,60)), &scene);
+
+QGraphicsProxyWidget *proxy0 = scene.addWidget(tabWidget);
+QGraphicsProxyWidget *proxy1 = scene.addWidget(dynamic_cast<QWidget*>(itemBox));
+QGraphicsView view(&scene);
+view.show();
+#endif
     return app.exec();
 }

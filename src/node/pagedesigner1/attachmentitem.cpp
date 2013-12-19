@@ -9,10 +9,11 @@ AttachmentItem::AttachmentItem(const QPointF &position,QPixmap pic)
     setPixmap(pic);
     setPos(position);
 }
-void AttachmentItem::mousePressEvent(QKeyEvent *event)
+void AttachmentItem::mousePressEvent(QGraphicsSceneMouseEvent  *event)
 {
     //mouse left click open the attachment
-    QDesktopServices::openUrl((QUrl::fromLocalFile(this->getFileName())));
+    if(event->button() == Qt::LeftButton)
+        QDesktopServices::openUrl((QUrl::fromLocalFile(this->getFileName())));
 }
 int AttachmentItem::type() const { return AttachmentItemType; }
 
