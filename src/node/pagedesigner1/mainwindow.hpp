@@ -15,7 +15,8 @@
 
 #include <QMainWindow>
 #include <QPrinter>
-
+//#include "ui_form.h"
+#include <QGraphicsScene>
 
 class BrushWidget;
 class GraphicsView;
@@ -44,6 +45,7 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *event);
 
+
 private slots:
     void fileNew();
     void fileOpen();
@@ -54,6 +56,7 @@ private slots:
     void editSelectedItem();
     void editAddItem();
     void editAddNodeItem();
+    void addNodeProxy();
     void editCopy();
     void editCut();
     void editPaste();
@@ -112,6 +115,7 @@ private:
     QAction *editAddBoxAction;
     QAction *editAddSmileyAction;
     QAction *editAddNodeAction;
+    QAction *editAddNodeProxyAction;
     QAction *editCopyAction;
     QAction *editCutAction;
     QAction *editPasteAction;
@@ -139,6 +143,7 @@ private:
 #ifdef SCREENSHOTS
     QList<QPixmap> screenshots;
 #endif
+    //Ui::Form *ui;
 };
 
 #endif // MAINWINDOW_HPP

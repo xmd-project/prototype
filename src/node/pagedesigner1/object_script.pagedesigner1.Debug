@@ -2,6 +2,9 @@ INPUT(
 ./debug/alt_key.o
 ./debug/nodeitem.o
 ./debug/attachmentitem.o
+./debug/nodewidget.o
+./debug/nodewidgetproxy.o
+./debug/xmdnodedata.o
 ./debug/kuhn_munkres.o
 ./debug/aqp.o
 ./debug/textedit.o
@@ -19,6 +22,9 @@ INPUT(
 ./debug/qrc_textedit.o
 ./debug/qrc_pagedesigner.o
 ./debug/moc_nodeitem.o
+./debug/moc_nodewidget.o
+./debug/moc_nodewidgetproxy.o
+./debug/moc_xmdnodedata.o
 ./debug/moc_textedit.o
 ./debug/moc_boxitem.o
 ./debug/moc_smileyitem.o

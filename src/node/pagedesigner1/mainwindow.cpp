@@ -23,6 +23,9 @@
 #include "textitemdialog.hpp"
 #include "textitem.hpp"
 #include "transformwidget.hpp"
+//#include "nodewidget.h"
+#include "global.hpp"
+#include "nodewidgetproxy.h"
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -53,7 +56,7 @@
 #endif
 #include <cmath>
 #include <limits>
-
+#include <QGraphicsProxyWidget>
 
 namespace {
 
@@ -105,11 +108,11 @@ QObject *qObjectFrom(QGraphicsItem *item)
 
 } // anonymous namespace
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), gridGroup(0), addOffset(OffsetIncrement),
       pasteOffset(OffsetIncrement)
 {
+    //ui->setupUi(this);
     printer = new QPrinter(QPrinter::HighResolution);
 
     createSceneAndView();
@@ -128,6 +131,7 @@ MainWindow::MainWindow(QWidget *parent)
         setWindowFilePath(filename);
         QTimer::singleShot(0, this, SLOT(loadFile()));
     }
+
 }
 
 
@@ -195,6 +199,10 @@ void MainWindow::createActions()
     editAddNodeAction = new QAction(QIcon(":/editaddnode.png"),
             tr("Add Node"), this);
     editAddNodeAction->setData(NodeItemType);
+    //add proxy based node action
+    editAddNodeProxyAction = new QAction(QIcon(":/nodeproxy.png"),
+                                         tr("Add Node Proxy"), this);
+
     editCopyAction = new QAction(QIcon(":/editcopy.png"), tr("&Copy"),
                                  this);
     editCopyAction->setShortcuts(QKeySequence::Copy);
@@ -264,7 +272,8 @@ void MainWindow::createMenusAndToolBars()
     populateMenuAndToolBar(editMenu, editToolBar, QList<QAction*>()
             << editSelectedItemAction << separator
             << editAddTextAction << editAddBoxAction
-            << editAddSmileyAction << editAddNodeAction << separator << editCopyAction
+            << editAddSmileyAction << editAddNodeAction <<editAddNodeProxyAction
+                           << separator << editCopyAction
             << editCutAction << editPasteAction << separator
             << editAlignmentAction << editClearTransformsAction);
 
@@ -354,6 +363,8 @@ void MainWindow::createConnections()
     //add node action
     connect(editAddNodeAction, SIGNAL(triggered()),
             this, SLOT(editAddNodeItem()));
+    connect(editAddNodeProxyAction, SIGNAL(triggered()),
+            this, SLOT(addNodeProxy()));
     connect(editCopyAction, SIGNAL(triggered()),
             this, SLOT(editCopy()));
     connect(editCutAction, SIGNAL(triggered()),
@@ -794,7 +805,22 @@ void MainWindow::editAddItem()
         connectItem(item);
         setDirty(true);
     }
+    //addNodeProxy(position());
 }
+void MainWindow::addNodeProxy()
+{
+    //test
+
+    XmdNodeWidgetProxy *nodeProxy=new XmdNodeWidgetProxy(0,Qt::Widget,position());
+    //nodeProxy->setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+    scene->addItem(nodeProxy);
+    //scene->addItem(nodeProxy);
+    if (nodeProxy) {
+        connectItem(dynamic_cast<QObject*>(nodeProxy));
+        setDirty(true);
+    }
+}
+
 //add for handling of adding Node
 using namespace SmileyConst;
 void MainWindow::editAddNodeItem()

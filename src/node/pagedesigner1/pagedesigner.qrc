@@ -31,5 +31,6 @@
         <file alias="editaddnode.png">images/editaddnode.png</file>
         <file alias="attachment.png">images/attachment.png</file>
         <file alias="weblink.png">images/weblink.png</file>
+        <file alias="nodeproxy.png">images/nodeproxy.png</file>
     </qresource>
 </RCC>

@@ -19,21 +19,19 @@ public:
     explicit NodeItem(QObject *parent = 0);
     NodeItem(const QPointF &point,QGraphicsScene *scene);
     void DrawNodeItems(const QPointF &point);
-    QList<QGraphicsItemGroup*> m_nodeitem;
+    //QList<QGraphicsItemGroup*> m_nodeitem;
     void edit();
     void setSelectedItem(ItemType it);
-    ItemType hasAttachment();
-    QPointF m_PosRightMiddle;
-    void ExtendByRightSide(qint32 dx,qint8 isTextChanged);
+    bool hasAttachment();
     qint32 get_attachment_num(){return m_attachment_num;}
 signals:
     void dirty();
 private:
     bool m_mousehold;
     ItemType m_added;
-    void addAttachment();
+    QPointF m_PosRightMiddle;
     qint32 m_attachment_num;
-    //AttachmentItem* addWebLink();
+    void addAttachment();
     QAction *createMenuAction(QMenu *menu, const QIcon &icon,
             const QString &text, bool checked, QActionGroup *group,
             const QVariant &data);

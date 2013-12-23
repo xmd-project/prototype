@@ -16,8 +16,9 @@
 #include <QIcon>
 #include <ctime>
 #include <QtWidgets> // added for Qt5
-
 #include "boxitem.hpp"
+#include "ui_form.h"
+#include "nodewidget.h"
 
 int main(int argc, char *argv[])
 {
@@ -33,8 +34,9 @@ int main(int argc, char *argv[])
     qsrand(static_cast<uint>(time(0)));
     MainWindow window;
     window.show();
-    //test proxy widget
+
 #if 0
+    //test proxy widget
 QTabWidget *tabWidget = new QTabWidget;
 QGraphicsScene scene;
 BoxItem *itemBox = new BoxItem(QRect(QPoint(1,1), QSize(30,60)), &scene);

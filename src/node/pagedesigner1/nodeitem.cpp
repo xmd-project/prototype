@@ -18,7 +18,7 @@ void NodeItem::DrawNodeItems(const QPointF &point)
     int HTxt=0;  //get the EditTxt box heigth
     int Wattach=0;
     int Nchild=this->childItems().size();  //NodeItem's child number
-    int iattr=this->get_attachment_num();
+    int iattr=this->m_attachment_num;
     if (Nchild==0)
         return;
     for(int i=0; i<Nchild;i++)
@@ -30,17 +30,16 @@ void NodeItem::DrawNodeItems(const QPointF &point)
             WTxt=it->getTextSize().width(); //get the EditTxt box width
             HTxt=it->getTextSize().height();  //get the EditTxt box heigth
             it->setPos(SmileySize+point.x(),point.y()+SmileyHalfSize-15);
-
         }
         else if(item->type() ==  AttachmentItemType){
-            if (this->hasAttachment()==NodeItem::Empty)
+            if (!this->hasAttachment())
                 break;
-            else if (this->hasAttachment()==NodeItem::Weblink || this->hasAttachment()==NodeItem::Attachment)
+            else
             {
                 //draw attachment ico
                 AttachmentItem *it=dynamic_cast<AttachmentItem*>(item);
                 //50!! -- TODO: hardcode
-                Wattach=it->radius.width();
+                Wattach=it->radius.width()>Wattach?it->radius.width():Wattach; //get the bigger width
                 //this->ExtendByRightSide(it->radius.width(),true);
             }
         }
@@ -50,8 +49,7 @@ void NodeItem::DrawNodeItems(const QPointF &point)
     {
         //for loop
         QGraphicsItem *item=(this->childItems()).at(i);
-        switch (item->type()) {
-        case BoxItemType:{
+        if (item->type() == BoxItemType) {
             BoxItem *itbox=dynamic_cast<BoxItem*>(item);
             //int boxWidth=(WTxt+SmileySize)*1.1;
             int boxWidth=(WTxt+SmileySize)*1.1+Wattach*this->get_attachment_num();
@@ -59,22 +57,22 @@ void NodeItem::DrawNodeItems(const QPointF &point)
             QRect rect_(QPoint(point.x(),point.y()), QSize(boxWidth,boxHight));
             itbox->setPos(rect_.center());
             itbox->setRect(QRectF(QPointF(-rect_.width() / 2.0,
-                                   -rect_.height() / 2.0), rect_.size()));
+                                          -rect_.height() / 2.0), rect_.size()));
             this->m_PosRightMiddle=QPointF(point.x()+rect_.width(),point.y()+rect_.height()/2);
             break;
         }
-        case SmileyItemType:{
+    }
+    for(int i=0; i<Nchild;i++)
+    {
+        QGraphicsItem *item=(this->childItems()).at(i);
+        if (item->type() ==SmileyItemType) {
             SmileyItem *it=dynamic_cast<SmileyItem*>(item);
             it->setPos(point.x()+SmileyHalfSize,point.y()+SmileyHalfSize);
-            break;
         }
-        case TextItemType:{
-            break;
-        }
-        case AttachmentItemType:{
-            if (this->hasAttachment()==NodeItem::Empty)
+        else if (item->type() ==AttachmentItemType) {
+            if (!this->hasAttachment())
                 break;
-            else if (this->hasAttachment()==NodeItem::Weblink || this->hasAttachment()==NodeItem::Attachment)
+            else
             {
                 //draw attachment ico
                 AttachmentItem *it=dynamic_cast<AttachmentItem*>(item);
@@ -83,16 +81,12 @@ void NodeItem::DrawNodeItems(const QPointF &point)
                 //this->ExtendByRightSide(it->radius.width(),true);
                 iattr--;
             }
-
-            break;
-        }
-
         }
     }
 }
-NodeItem::ItemType NodeItem::hasAttachment()
+bool NodeItem::hasAttachment()
 {
-    return this->m_added;
+    return this->m_attachment_num>0;
 }
 
 void NodeItem::edit()
@@ -121,7 +115,8 @@ void NodeItem::setSelectedItem(ItemType it)
     {
         //no needed beacuse addWebLinlk is a slot function and connected into a signal!
         //addWebLink();
-        m_added=Weblink;
+        //m_added=Weblink;
+        ;
     }
     else if(it==Attachment)
     {
@@ -155,10 +150,11 @@ void NodeItem::addAttachment()
     AttachmentItem *pAttachItem = new AttachmentItem(this->pos(),QPixmap(":/attachment.png"));
     pAttachItem->setFileName(fileName);
     pAttachItem->radius=QPixmap(":/attachment.png").size();
-    this->addToGroup(pAttachItem);
+    addToGroup(pAttachItem);
     pAttachItem->setPos(m_PosRightMiddle);
-    ExtendByRightSide(pAttachItem->radius.width(),-1);
     m_attachment_num++;
+    //redraw NodeItems at the current position
+    DrawNodeItems(this->childrenBoundingRect().topLeft());
 }
 void NodeItem::addWebLink()
 {
@@ -173,11 +169,11 @@ void NodeItem::addWebLink()
     AttachmentItem *pAttachItem = new AttachmentItem(this->pos(),QPixmap(":/weblink.png"));
     pAttachItem->setFileName(Strweblink);
     pAttachItem->radius=QPixmap(":/weblink.png").size();
-    this->addToGroup(pAttachItem);
-    //pAttachItem->setPos(m_PosRightMiddle.x(),m_PosRightMiddle.y()+pAttachItem->radius.width());
+    addToGroup(pAttachItem);
     pAttachItem->setPos(m_PosRightMiddle);
-    ExtendByRightSide(pAttachItem->radius.width(),-1);
     m_attachment_num++;
+    m_added=Weblink;
+    DrawNodeItems(this->childrenBoundingRect().topLeft());
 }
 
 NodeItem::NodeItem(const QPointF &point,QGraphicsScene *scene) :
@@ -186,6 +182,7 @@ NodeItem::NodeItem(const QPointF &point,QGraphicsScene *scene) :
     QGraphicsItem *itemBox = 0;
     QGraphicsItem *itemSmile = 0;
     QGraphicsItem *itemTxt = 0;
+
     m_added=Empty;
     m_attachment_num=0;
     m_PosRightMiddle=QPointF(-1,-1);
@@ -201,16 +198,25 @@ NodeItem::NodeItem(const QPointF &point,QGraphicsScene *scene) :
     this->setFlags(QGraphicsItem::ItemIsMovable
                    |QGraphicsItem::ItemSendsScenePositionChanges
                    |QGraphicsItem::ItemSendsGeometryChanges); //let all move togather
+    this->setHandlesChildEvents(true);
     itemBox->setZValue(BoxItemType);
-    //itemBox->setParentItem(this);
     itemSmile->setZValue(SmileyItemType);
-    //itemSmile->setParentItem(this);
     itemTxt->setZValue(TextItemType);
+#if 0
     //itemTxt->setParentItem(this);
     //qDebug()<<"BOX:"<<itemBox->parentItem();
     //qDebug()<<"Smile:"<<itemSmile->parentItem();
     //qDebug()<<"Txt:"<<itemTxt->parentItem();
-
+    //for testing
+    QRectF pt=this->childrenBoundingRect();
+    bool bl=this->filtersChildEvents(); //false
+    bool bl1=this->handlesChildEvents();//true
+    QPointF pf=this->mapToItem(itemSmile,QPointF(1,1));
+    QPointF pf1=this->scenePos();
+    pf1=this->pos();
+    QRectF pfx=this->mapRectToScene(pt);
+    itemTxt=NULL;
+#endif
 }
 void NodeItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -218,8 +224,6 @@ void NodeItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QPointF posxy=event->scenePos();
     qDebug()<<this->childItems();
     //qDebug()<<"Mouse Pos:"<<posxy;
-    qint8 isTextChanged=0;
-    qint32 Wnew=0,Xnew=0;
     for(int i=0; i<(this->childItems()).size();i++)
     {
         //for loop
@@ -229,76 +233,16 @@ void NodeItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         {
             qDebug()<<"double click Text Item here";
             TextItem *it=dynamic_cast<TextItem*>(item);
-            qreal Wold=it->getTextSize().width();
             if (it->contains(posxy))
             {
                 it->edit();
-                Wnew=it->getTextSize().width();
-                if(Wnew!=Wold)
-                {
-                    isTextChanged=1;
-                    Xnew=Wnew-Wold;
-                }
-                qDebug()<<"Changed Text Item here";
             }
             break;
         }
     }
-    //if (this->get_attachment_num())
-        ExtendByRightSide(Xnew,isTextChanged);
-    //else
-        //
-        //DrawNodeItems(this->scenePos());
+    DrawNodeItems(this->childrenBoundingRect().topLeft());
 }
 
-void NodeItem::ExtendByRightSide(qint32 dx, qint8 isTextChanged)
-{
-    qint32 iattr=this->get_attachment_num();
-    for(int i=0; i<(this->childItems()).size();i++)
-    {
-        //for loop
-        QGraphicsItem *item=(this->childItems()).at(i);
-        //only Text Item response to double click event
-        //if(!isTextChanged || dx<0) //limit dx<0 no adjust
-        if(!isTextChanged) //limit dx<0 no adjust
-            break;
-        if(item->type() == BoxItemType)
-        {
-            qDebug()<<"Change Size of Box item now!";
-            BoxItem *itbox=dynamic_cast<BoxItem*>(item);
-                QRectF rectangle(itbox->rect());
-                rectangle.setRight(rectangle.right()+dx); //done!
-                itbox->setRect(rectangle);
-                this->m_PosRightMiddle.setX(this->m_PosRightMiddle.x()+dx);
-                //test move,it works
-                //this->moveBy(Xnew,0);
-            //itemTxt->setX(xt);  //also update its sub menber's pos
-                //emit(itbox->dirty());
-                //scene()->update();
-        }
-    }
-    for(int i=0; i<(this->childItems()).size();i++)
-    {
-        //for loop
-        QGraphicsItem *item=(this->childItems()).at(i);
-        //only Text Item response to double click event
-        if(!isTextChanged)
-            break;
-        if(item->type() ==  AttachmentItemType && isTextChanged==1){
-            //only for textbox adjust and attach box also need to adjust
-            if(this->get_attachment_num())
-            {
-                //reset the pos of attachment
-                AttachmentItem *it=dynamic_cast<AttachmentItem*>(item);
-                qint32 Wattach = it->radius.width();
-                it->setPos(this->m_PosRightMiddle.x()-iattr*Wattach,this->m_PosRightMiddle.y());
-                qDebug()<<"changed attach "<<iattr<<"times";
-                iattr--;
-                //break;
-            }
-        }
-   }
-}
 
 void NodeItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -325,25 +269,30 @@ void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     for(int i=0; i<(this->childItems()).size();i++)
     {
         //for loop
+        qDebug()<<"mouse press loop:"<<i;
         QGraphicsItem *item=(this->childItems()).at(i);
         switch (item->type()) {
-            case BoxItemType:{
-            BoxItem *it=dynamic_cast<BoxItem*>(item);
-            bool isclickme=it->contains(posxy);
+        case BoxItemType:{
+            qDebug()<<"Click BoxItem here"<<i;
+            //BoxItem *it=dynamic_cast<BoxItem*>(item);
+            //bool isclickme=it->contains(posxy);
+            //check if the pos within scene axis locates in BoxItem since it's the biggest child
+            bool isclickme=this->childrenBoundingRect().contains(posxy);
             if(event->button() ==Qt::RightButton && isclickme)
             {
                 //right click event
                 edit();
-                qDebug()<<"Right Click BoxItem here";
+                qDebug()<<"Right Click BoxItem here"<<i;
+                return; //to avoid double enter in this section
             }
             break;
         }
-            case SmileyItemType:{
+        case SmileyItemType:{
             SmileyItem *it=dynamic_cast<SmileyItem*>(item);
             if(it->contains(posxy) && event->button() == Qt::LeftButton)
-            //the 2 below not work, since the different XY system(item vs. scene )
-            //if((it->shape()).contains(posxy) && event->button() == Qt::LeftButton)
-            //if((it->boundingRect()).contains(posxy) && event->button() == Qt::LeftButton)
+                //the 2 below not work, since the different XY system(item vs. scene )
+                //if((it->shape()).contains(posxy) && event->button() == Qt::LeftButton)
+                //if((it->boundingRect()).contains(posxy) && event->button() == Qt::LeftButton)
             {
                 //show the context window
                 it->edit();
@@ -351,7 +300,7 @@ void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
             }
             break;
         }
-            case TextItemType:{
+        case TextItemType:{
             TextItem *it=dynamic_cast<TextItem*>(item);
             if (it->contains(posxy))
                 qDebug()<<"Click Text Item here";
@@ -367,44 +316,8 @@ void NodeItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
 
         }
-     }
-
-}
-
-
-#if 0
-//not work, if has, no node group is shown
-QVariant NodeItem::itemChange(GraphicsItemChange change,
-                                const QVariant &value)
-{
-    if (isDirtyChange(change))
-    {
-        //emit dirty();
-        for(int i=0; i<(this->childItems()).size();i++)
-        {
-            //for loop
-            QGraphicsItem *item=(this->childItems()).at(i);
-            switch (item->type()) {
-            case BoxItemType:{
-                BoxItem *itbox=dynamic_cast<BoxItem*>(item);
-                itbox->itemChange(change,value);
-                //qDebug()<<"click BoxItem here";
-                break;
-            }
-            case SmileyItemType:{
-                SmileyItem *it=dynamic_cast<SmileyItem*>(item);
-                it->itemChange(change,value);
-                break;
-            }
-            case TextItemType:{
-                TextItem *it=dynamic_cast<TextItem*>(item);
-                it->itemChange(change,value);
-                break;
-            }
-
-            }
-        }
-        return QGraphicsItem::itemChange(change, value);
     }
+
 }
-#endif
+
+

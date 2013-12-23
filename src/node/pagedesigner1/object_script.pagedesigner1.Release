@@ -2,6 +2,9 @@ INPUT(
 ./release/alt_key.o
 ./release/nodeitem.o
 ./release/attachmentitem.o
+./release/nodewidget.o
+./release/nodewidgetproxy.o
+./release/xmdnodedata.o
 ./release/kuhn_munkres.o
 ./release/aqp.o
 ./release/textedit.o
@@ -19,6 +22,9 @@ INPUT(
 ./release/qrc_textedit.o
 ./release/qrc_pagedesigner.o
 ./release/moc_nodeitem.o
+./release/moc_nodewidget.o
+./release/moc_nodewidgetproxy.o
+./release/moc_xmdnodedata.o
 ./release/moc_textedit.o
 ./release/moc_boxitem.o
 ./release/moc_smileyitem.o

@@ -2,10 +2,16 @@ CONFIG	     += console debug
 QT	     += svg
 HEADERS	     += aqp/alt_key.hpp \
     nodeitem.hpp \
-    attachmentitem.h
+    attachmentitem.h \
+    nodewidget.h \
+    nodewidgetproxy.h \
+    xmdnodedata.h
 SOURCES	     += aqp/alt_key.cpp \
     nodeitem.cpp \
-    attachmentitem.cpp
+    attachmentitem.cpp \
+    nodewidget.cpp \
+    nodewidgetproxy.cpp \
+    xmdnodedata.cpp
 HEADERS	     += aqp/kuhn_munkres.hpp
 SOURCES	     += aqp/kuhn_munkres.cpp
 HEADERS	     += aqp/aqp.hpp
@@ -44,3 +50,6 @@ QT += widgets #added for Qt5
 QT += printsupport
 #DEFINES	     += ALTERNATIVE_RESIZING
 win32 { INCLUDEPATH += . }
+
+FORMS += \
+    form.ui

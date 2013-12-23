@@ -41,7 +41,8 @@ BoxItem::BoxItem(const QRect &rect_, QGraphicsScene *scene)
 
 bool BoxItem::contains(const QPointF &point) const
     {
-        return QRect(this->x(),this->y(),this->rect().width(),this->rect().height()).contains(point.x(),point.y());
+        //return QRect(this->x(),this->y(),this->rect().width(),this->rect().height()).contains(point.x(),point.y());
+        return this->rect().contains(point);
     }
 void BoxItem::setPen(const QPen &pen_)
 {
