@@ -13,24 +13,31 @@ XmdNodeWidgetProxy::XmdNodeWidgetProxy(QGraphicsItem *parent, Qt::WindowFlags wF
                    |QGraphicsItem::ItemSendsGeometryChanges); //let all move togather
 
 }
-#if 0
-void XmdNodeWidgetProxy::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    //m_pressed=true;
-    QGraphicsItem::mousePressEvent(event);
-}
 
+bool XmdNodeWidgetProxy::sceneEvent(QEvent *event)
+{
+        //qDebug()<<"QwidgetProxy POS0:"<<this->scenePos();
+    if (event->type() == QEvent::GraphicsSceneMousePress||
+            event->type() == QEvent::GraphicsSceneMouseRelease ||
+            event->type() == QEvent::GraphicsSceneMouseMove ||
+            event->type() == QEvent::GraphicsSceneMouseDoubleClick )
+    {
+        //qDebug()<<"sceneEvent...";
+        //qDebug()<<"QwidgetProxy POS1:"<<this->scenePos();
+        QGraphicsProxyWidget::mousePressEvent((QGraphicsSceneMouseEvent *)(event));
 
-void XmdNodeWidgetProxy::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    //m_pressed=false;
-    QGraphicsItem::mouseReleaseEvent(event);
-}
-#endif
-void XmdNodeWidgetProxy::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    //if(m_pressed)
-        this->setPos(event->scenePos());
-    QGraphicsItem::mouseMoveEvent(event);
+        if (event->type() == QEvent::GraphicsSceneMouseRelease)
+        {
+            QGraphicsItem::mouseReleaseEvent((QGraphicsSceneMouseEvent *)(event));
+        }
+
+        else if (event->type() == QEvent::GraphicsSceneMouseMove)
+        {
+            QGraphicsItem::mouseMoveEvent((QGraphicsSceneMouseEvent *)(event));
+        }
+        event->setAccepted(true);
+        return true;
+    }
+      return false;
 }
 

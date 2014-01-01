@@ -17,7 +17,8 @@ protected:
     //TODO: use mouseReleaseEvent can let the widget move with mouse, but block the signal/slot of
     //nodewidget,why?
     //void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    //void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    bool sceneEvent(QEvent *event);
 private:
     bool m_pressed;
 };
