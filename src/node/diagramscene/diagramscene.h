@@ -43,6 +43,7 @@
 
 #include "diagramitem.h"
 #include "diagramtextitem.h"
+#include "nodeproxywidget.h"
 
 #include <QGraphicsScene>
 
@@ -62,7 +63,7 @@ class DiagramScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    enum Mode { InsertItem, InsertLine, InsertText, MoveItem };
+    enum Mode { InsertItem, InsertLine, InsertText, InsertNode, MoveItem };
 
     explicit DiagramScene(QMenu *itemMenu, QObject *parent = 0);
     QFont font() const { return myFont; }
@@ -82,6 +83,7 @@ public slots:
 signals:
     void itemInserted(DiagramItem *item);
     void textInserted(QGraphicsTextItem *item);
+    void nodeInserted(NodeProxyWidget *item);
     void itemSelected(QGraphicsItem *item);
 
 protected:
@@ -103,6 +105,7 @@ private:
     QColor myTextColor;
     QColor myItemColor;
     QColor myLineColor;
+    NodeProxyWidget *nodeItem;
 };
 //! [0]
 

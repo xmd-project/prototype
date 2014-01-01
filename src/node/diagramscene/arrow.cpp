@@ -40,6 +40,8 @@
 
 
 #include "arrow.h"
+#include "diagramitem.h"
+#include "nodeproxywidget.h"
 
 #include <math.h>
 
@@ -49,7 +51,7 @@
 const qreal Pi = 3.14;
 
 //! [0]
-Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem, QGraphicsItem *parent)
+Arrow::Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem, QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
 {
     myStartItem = startItem;
@@ -103,20 +105,44 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     painter->setBrush(myColor);
 //! [4] //! [5]
 
+    // Find the arrow head position (intersectPoint) at the edge of the end item
     QLineF centerLine(myStartItem->pos(), myEndItem->pos());
-    QPolygonF endPolygon = myEndItem->polygon();
-    QPointF p1 = endPolygon.first() + myEndItem->pos();
-    QPointF p2;
     QPointF intersectPoint;
-    QLineF polyLine;
-    for (int i = 1; i < endPolygon.count(); ++i) {
-    p2 = endPolygon.at(i) + myEndItem->pos();
-    polyLine = QLineF(p1, p2);
-    QLineF::IntersectType intersectType =
-        polyLine.intersect(centerLine, &intersectPoint);
-    if (intersectType == QLineF::BoundedIntersection)
-        break;
-        p1 = p2;
+    DiagramItem *endItem = qgraphicsitem_cast<DiagramItem *>(myEndItem);
+    if (endItem) {
+        QPolygonF endPolygon = endItem->polygon();
+        QPointF p1 = endPolygon.first() + endItem->pos();
+        QPointF p2;
+        QLineF polyLine;
+        for (int i = 1; i < endPolygon.count(); ++i) {
+            p2 = endPolygon.at(i) + endItem->pos();
+            polyLine = QLineF(p1, p2);
+            QLineF::IntersectType intersectType =
+                    polyLine.intersect(centerLine, &intersectPoint);
+            if (intersectType == QLineF::BoundedIntersection)
+                break;
+            p1 = p2;
+        }
+    } else {
+        NodeProxyWidget *endItem = qgraphicsitem_cast<NodeProxyWidget *>(myEndItem);
+        if (endItem) {
+            QRectF endRect = endItem->boundingRect();
+            enum {NRectPoints = 4};
+            QPointF p[NRectPoints] = {endRect.topLeft() + endItem->pos(), endRect.topRight() + endItem->pos(),
+                                      endRect.bottomRight() + endItem->pos(), endRect.bottomLeft() + endItem->pos()};
+            QPointF p1 = p[0];
+            QPointF p2;
+            QLineF polyLine;
+            for (int i = 1; i < NRectPoints; ++i) {
+                p2 = p[i];
+                polyLine = QLineF(p1, p2);
+                QLineF::IntersectType intersectType =
+                        polyLine.intersect(centerLine, &intersectPoint);
+                if (intersectType == QLineF::BoundedIntersection)
+                    break;
+                p1 = p2;
+            }
+        }
     }
 
     setLine(QLineF(intersectPoint, myStartItem->pos()));

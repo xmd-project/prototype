@@ -102,8 +102,12 @@ void DiagramItem::removeArrow(Arrow *arrow)
 void DiagramItem::removeArrows()
 {
     foreach (Arrow *arrow, arrows) {
-        arrow->startItem()->removeArrow(arrow);
-        arrow->endItem()->removeArrow(arrow);
+        DiagramItem *terminalItem = qgraphicsitem_cast<DiagramItem *>(arrow->startItem());
+        if (terminalItem)
+            terminalItem->removeArrow(arrow);
+        terminalItem = qgraphicsitem_cast<DiagramItem *>(arrow->endItem());
+        if (terminalItem)
+            terminalItem->removeArrow(arrow);
         scene()->removeItem(arrow);
         delete arrow;
     }

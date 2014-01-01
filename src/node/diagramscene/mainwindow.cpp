@@ -47,6 +47,7 @@
 #include <QtWidgets>
 #include <QDebug>
 const int InsertTextButton = 10;
+const int InsertNodeButton = 20;
 
 //! [0]
 MainWindow::MainWindow()
@@ -61,6 +62,8 @@ MainWindow::MainWindow()
             this, SLOT(itemInserted(DiagramItem*)));
     connect(scene, SIGNAL(textInserted(QGraphicsTextItem*)),
             this, SLOT(textInserted(QGraphicsTextItem*)));
+    connect(scene, SIGNAL(nodeInserted(NodeProxyWidget*)),
+            this, SLOT(nodeInserted(NodeProxyWidget*)));
     connect(scene, SIGNAL(itemSelected(QGraphicsItem*)),
             this, SLOT(itemSelected(QGraphicsItem*)));
     createToolbars();
@@ -112,6 +115,8 @@ void MainWindow::buttonGroupClicked(int id)
     }
     if (id == InsertTextButton) {
         scene->setMode(DiagramScene::InsertText);
+    } else if (id == InsertNodeButton) {
+        scene->setMode(DiagramScene::InsertNode);
     } else {
         scene->setItemType(DiagramItem::DiagramType(id));
         scene->setMode(DiagramScene::InsertItem);
@@ -126,8 +131,12 @@ void MainWindow::deleteItem()
         if (item->type() == Arrow::Type) {
             scene->removeItem(item);
             Arrow *arrow = qgraphicsitem_cast<Arrow *>(item);
-            arrow->startItem()->removeArrow(arrow);
-            arrow->endItem()->removeArrow(arrow);
+            DiagramItem *terminalItem = qgraphicsitem_cast<DiagramItem *>(arrow->startItem());
+            if (terminalItem)
+                terminalItem->removeArrow(arrow);
+            terminalItem = qgraphicsitem_cast<DiagramItem *>(arrow->endItem());
+            if (terminalItem)
+                terminalItem->removeArrow(arrow);
             delete item;
         }
     }
@@ -208,6 +217,12 @@ void MainWindow::textInserted(QGraphicsTextItem *)
     scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
 }
 //! [8]
+
+void MainWindow::nodeInserted(NodeProxyWidget *)
+{
+    buttonGroup->button(InsertNodeButton)->setChecked(false);
+    scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
+}
 
 //! [9]
 void MainWindow::currentFontChanged(const QFont &)
@@ -355,6 +370,21 @@ void MainWindow::createToolBox()
 
     QWidget *itemWidget = new QWidget;
     itemWidget->setLayout(layout);
+
+    QToolButton *nodeButton = new QToolButton;
+    nodeButton->setCheckable(true);
+    buttonGroup->addButton(nodeButton, InsertNodeButton);
+    nodeButton->setIcon(QIcon(QPixmap(":/images/node.png")));
+    nodeButton->setIconSize(QSize(50, 50));
+    QGridLayout *nodeLayout = new QGridLayout;
+    nodeLayout->addWidget(nodeButton, 0, 0, Qt::AlignHCenter);
+    nodeLayout->addWidget(new QLabel(tr("Node")), 1, 0, Qt::AlignCenter);
+    QWidget *nodeWidget = new QWidget;
+    nodeWidget->setLayout(nodeLayout);
+    layout->addWidget(nodeWidget, 2, 0);
+
+    layout->setRowStretch(4, 10);
+    layout->setColumnStretch(1, 10);
 
     backgroundButtonGroup = new QButtonGroup(this);
     connect(backgroundButtonGroup, SIGNAL(buttonClicked(QAbstractButton*)),

@@ -42,6 +42,7 @@
 #define MAINWINDOW_H
 
 #include "diagramitem.h"
+#include "nodeproxywidget.h"
 
 #include <QMainWindow>
 
@@ -80,6 +81,7 @@ private slots:
     void insertAttachFile();
     void itemInserted(DiagramItem *item);
     void textInserted(QGraphicsTextItem *item);
+    void nodeInserted(NodeProxyWidget *);
     void currentFontChanged(const QFont &font);
     void fontSizeChanged(const QString &size);
     void sceneScaleChanged(const QString &scale);
