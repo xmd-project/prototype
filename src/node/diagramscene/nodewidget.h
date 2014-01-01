@@ -20,13 +20,10 @@ public:
 signals:
 
 public slots:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    //void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     Ui::NodeWidget *ui;
-    QPoint oldPos;
+
 };
 
 #endif // NODEWIDGET_H

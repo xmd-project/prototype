@@ -2,7 +2,6 @@
 #define NODEPROXYWIDGET_H
 
 #include <QGraphicsProxyWidget>
-#include <QPointF>
 
 class Arrow;
 
@@ -24,11 +23,8 @@ signals:
 public slots:
 
 protected:
-#if 0
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-#endif
+bool sceneEvent(QEvent *event);
+
 private:
     QList<Arrow *> arrows;
     QPointF oldPos;

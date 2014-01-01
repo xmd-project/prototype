@@ -9,7 +9,9 @@ NodeProxyWidget::NodeProxyWidget(QGraphicsItem *parent) :
 {
     setWidget(new NodeWidget);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
+             |QGraphicsItem::ItemSendsScenePositionChanges
+             |QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 void NodeProxyWidget::removeArrow(Arrow *arrow)
@@ -38,31 +40,23 @@ void NodeProxyWidget::addArrow(Arrow *arrow)
     arrows.append(arrow);
 }
 
-#if 0
-void NodeProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+bool NodeProxyWidget::sceneEvent(QEvent *event)
 {
-    oldPos = event->pos();
-    QGraphicsProxyWidget::mousePressEvent(event);
-    //QGraphicsItem::mousePressEvent(event);
-    //QGraphicsItem::update();
-}
-
-void NodeProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->modifiers() & Qt::ShiftModifier) {
-        QGraphicsItem::update();
-        return;
+    bool result = QGraphicsProxyWidget::sceneEvent(event);
+    if (event->type() == QEvent::GraphicsSceneMousePress
+            || event->type() == QEvent::GraphicsSceneMouseRelease
+            || event->type() == QEvent::GraphicsSceneMouseMove
+            || event->type() == QEvent::GraphicsSceneMouseDoubleClick)
+    {
+        if (event->type() == QEvent::GraphicsSceneMouseRelease) {
+            QGraphicsItem::mouseReleaseEvent((QGraphicsSceneMouseEvent *)(event));
+        } else if (event->type() == QEvent::GraphicsSceneMouseMove) {
+            QGraphicsItem::mouseMoveEvent((QGraphicsSceneMouseEvent *)(event));
+        } else if (event->type() == QEvent::GraphicsSceneMousePress) {
+            QGraphicsItem::mousePressEvent((QGraphicsSceneMouseEvent *)(event));
+        }
+        event->setAccepted(true);
+        return true;
     }
-    //QGraphicsItem::mouseMoveEvent(event);
-    setPos(event->pos());
-    QGraphicsProxyWidget::mouseMoveEvent(event);
+    return result;
 }
-
-void NodeProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsProxyWidget::mouseReleaseEvent(event);
-    //QGraphicsItem::mouseReleaseEvent(event);
-    //QGraphicsItem::update();
-
-}
-#endif
