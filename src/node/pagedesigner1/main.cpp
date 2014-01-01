@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     window.show();
 
 #if 0
-    //test proxy widget
+    //test proxy widget,todo
 QTabWidget *tabWidget = new QTabWidget;
 QGraphicsScene scene;
 BoxItem *itemBox = new BoxItem(QRect(QPoint(1,1), QSize(30,60)), &scene);
