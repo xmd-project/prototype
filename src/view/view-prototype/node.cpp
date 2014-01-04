@@ -2,6 +2,7 @@
 #include "edge.h"
 #include "nodewidget.h"
 #include <QGraphicsSceneMouseEvent>
+#include <QDebug>
 #include <cassert>
 
 Node::Node(QGraphicsProxyWidget *parent) :
@@ -10,8 +11,7 @@ Node::Node(QGraphicsProxyWidget *parent) :
     setWidget(new NodeWidget);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
-             |QGraphicsItem::ItemSendsScenePositionChanges
-             |QGraphicsItem::ItemSendsGeometryChanges);
+             |QGraphicsItem::ItemSendsScenePositionChanges);
 }
 
 void Node::addEdge(Edge *edge)
@@ -56,6 +56,7 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 #endif
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    //qDebug() << change;
     switch (change)
     {
     case ItemPositionHasChanged:
@@ -65,5 +66,5 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
     default:
         break;
     };
-    return QGraphicsItem::itemChange(change, value);
+    return QGraphicsProxyWidget::itemChange(change, value);
 }
