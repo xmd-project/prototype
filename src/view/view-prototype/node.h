@@ -14,13 +14,14 @@ class Edge;
 class Node : public QGraphicsProxyWidget
 {
     Q_OBJECT
+    void init();
 public:    
     enum { Type = UserType + 1 };
     int type() const { return Type; }
     explicit Node(QGraphicsProxyWidget *parent = 0);
+    Node(const QPointF &position, QGraphicsProxyWidget *parent = 0);
     QList<Edge *> edges() const { return _edges; }
     void addEdge(Edge *edge);
-
 signals:
 public slots:
 protected:

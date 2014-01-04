@@ -16,6 +16,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);
 };
 
 #endif // SCENE_H

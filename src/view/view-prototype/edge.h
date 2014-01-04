@@ -20,7 +20,6 @@ protected:
 private:
     Node *_source, *_dest;
     QPointF _sourcePoint, _destPoint;
-
     qreal _arrowSize;
 };
 

@@ -5,13 +5,25 @@
 #include <QDebug>
 #include <cassert>
 
-Node::Node(QGraphicsProxyWidget *parent) :
-    QGraphicsProxyWidget(parent, Qt::Widget)
+void Node::init()
 {
     setWidget(new NodeWidget);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
              |QGraphicsItem::ItemSendsScenePositionChanges);
+}
+
+Node::Node(QGraphicsProxyWidget *parent) :
+    QGraphicsProxyWidget(parent, Qt::Widget)
+{
+    init();
+}
+
+Node::Node(const QPointF &position, QGraphicsProxyWidget *parent) :
+    QGraphicsProxyWidget(parent, Qt::Widget)
+{
+    init();
+    setPos(position);
 }
 
 void Node::addEdge(Edge *edge)

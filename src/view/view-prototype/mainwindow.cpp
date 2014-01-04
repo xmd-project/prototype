@@ -61,10 +61,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     _ui(new Ui::MainWindow),
     _scene(new Scene),
-    _view(new QGraphicsView(_scene))
+    _view(new QGraphicsView)
 {
     _ui->setupUi(this);
 
+    _view->setScene(_scene);
     _view->setCacheMode(QGraphicsView::CacheBackground);
     _view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     _view->setRenderHint(QPainter::Antialiasing);
