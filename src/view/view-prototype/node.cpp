@@ -2,12 +2,16 @@
 #include "edge.h"
 #include "nodewidget.h"
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 #include <QDebug>
 #include <cassert>
 
 void Node::init()
 {
     setWidget(new NodeWidget);
+    _snapshotimage=0;
+    connect(this->widget(),SIGNAL(showimage(QString)),this,SLOT(showSnapShot(QString)));
+    connect(this->widget(),SIGNAL(closeimage()),this,SLOT(closeSnapShot()));
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
              |QGraphicsItem::ItemSendsScenePositionChanges);
@@ -24,6 +28,42 @@ Node::Node(const QPointF &position, QGraphicsProxyWidget *parent) :
 {
     init();
     setPos(position);
+}
+
+Node::~Node()
+{
+    delete _snapshotimage;
+}
+void Node::showSnapShot(QString imagefilename)
+{
+    //set scale factor (hard code)
+    float scalex=1.8;
+    float scaley=1.5;
+    int imagewidth;
+    int imageheight;
+    if(imagefilename.isEmpty())
+        return;
+    if(!_snapshotimage)
+        _snapshotimage =new QGraphicsPixmapItem(this);
+    QPixmap pixmaphere;
+    pixmaphere.load(imagefilename);
+    imagewidth=pixmaphere.width()/scalex;
+    imageheight=pixmaphere.height()/scaley;
+    pixmaphere= pixmaphere.scaled(imagewidth,imageheight,Qt::IgnoreAspectRatio, Qt::FastTransformation); //or Qt::SmoothTransformation);
+    _snapshotimage->setPixmap(pixmaphere);
+    //show image in the centre
+    _snapshotimage->setPos(QPointF(-imagewidth/2,-imageheight/2));
+    this->scene()->addItem((_snapshotimage));
+}
+
+void Node::closeSnapShot()
+{
+    if(!_snapshotimage)
+        return;
+    this->scene()->removeItem(_snapshotimage);
+    delete _snapshotimage;
+    _snapshotimage=0;
+
 }
 
 void Node::addEdge(Edge *edge)

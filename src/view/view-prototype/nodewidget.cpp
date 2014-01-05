@@ -9,6 +9,10 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMouseEvent>
+#include <QPainter>
+#include <QPixmap>
+#include <QDesktopWidget>
+#include <QScreen>
 
 NodeWidget::NodeWidget(QWidget *parent) :
     QWidget(parent), /*_ui(new Ui::NodeWidget),*/_uiNode(new Ui::Form),_data(new NodeData)
@@ -19,6 +23,8 @@ NodeWidget::NodeWidget(QWidget *parent) :
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Window,QBrush(QPixmap(":/showgrid.png")));
     this->setPalette(palette);
+    //let widget expending and shrink with the content
+    this->adjustSize();
 }
 
 NodeWidget::~NodeWidget()
@@ -36,6 +42,7 @@ void NodeWidget::mouseDoubleClickEvent(QMouseEvent *event)
         return;
     _uiNode->label->setText(Str);
     _data->setNodeText(Str);
+    this->adjustSize();
 }
 
 
@@ -61,6 +68,24 @@ void NodeWidget::openMarker()
     }
 }
 
+#if 0
+void NodeWidget::zoominImage()
+{
+    //show Image with the original size in the Widget like xmind
+    //we don't it that, but show the snapshot over the widget
+    qDebug()<<"zoominImage...";
+    QPixmap screen;
+    screen.load(_Imagetest);
+    QLabel *label = new QLabel(this);
+    _uiNode->HlayoutAttachment->addWidget(label);
+    label->resize(400, 200);
+    QPixmap pix = screen.scaled(label->size(), Qt::KeepAspectRatio,
+                                Qt::SmoothTransformation);
+    label->setPixmap(pix);
+
+}
+#endif
+
 void NodeWidget::addMarkerAttachment()
 {
     //qDebug()<<"add web link to Qwidget";
@@ -73,6 +98,9 @@ void NodeWidget::addMarkerAttachment()
     } else if (ita->data().toInt() ==AttachmentItem) {
         inputstr=tr("Add Attachment");
         curType=AttachmentItem;
+    } else if (ita->data().toInt() == ImageItem) {
+        inputstr=tr("Add Image");
+        curType=ImageItem;
     } else {
         inputstr=tr("Add Unknown Type...");
     }
@@ -80,6 +108,7 @@ void NodeWidget::addMarkerAttachment()
                                     inputstr, QLineEdit::Normal,0, 0);
     if(Strtmp.isEmpty())
         return;
+    if (curType != ImageItem) {
     QPushButton *pushbutton=new QPushButton;
     Datpair *it=new Datpair(pushbutton,Strtmp);
     if(curType==MarkerItem) {
@@ -89,14 +118,26 @@ void NodeWidget::addMarkerAttachment()
         _data->setNodeMarker(it);
         connect(pushbutton,SIGNAL(clicked()),this,SLOT(openMarker()));
     } else if (curType==AttachmentItem) {
-        _data->setNodeAttachment(it);
         pushbutton->setIcon(QIcon(":/attachment.png"));
         pushbutton->setFixedWidth(QPixmap(":/attachment.png").size().width());
         _uiNode->HlayoutAttachment->addWidget(pushbutton);
+        _data->setNodeAttachment(it);
         connect(pushbutton,SIGNAL(clicked()),this,SLOT(openAttachment()));
     }
-}
+    } else  {//if (curType==ImageItem)
+        NodeImagePushButton *pushbutton=new NodeImagePushButton(Strtmp);
+        Datpair *it=new Datpair((QPushButton *)pushbutton,Strtmp);
+        pushbutton->setIcon(QIcon(Strtmp));
+        pushbutton->setFixedWidth(20); //todo hardcode
+        _uiNode->HlayoutAttachment->addWidget(pushbutton);
+        _data->setNodeAttachment(it);  //take Image file as attachment
+        //connect two singals
+        connect(pushbutton,SIGNAL(showimage(QString)),this,SIGNAL(showimage(QString)));
+        connect(pushbutton,SIGNAL(closeimage()),this,SIGNAL(closeimage()));
+    }
 
+    this->adjustSize();
+}
 void NodeWidget::mousePressEvent(QMouseEvent *event)
 {
     //qDebug()<<"mat mousePressEvent";
@@ -106,11 +147,32 @@ void NodeWidget::mousePressEvent(QMouseEvent *event)
         _addMarkerAction->setCheckable(true);
         _addMarkerAction->setData(MarkerItem);
         connect(_addMarkerAction, SIGNAL(triggered(bool)),this, SLOT(addMarkerAttachment()));
-        _addAttachmentAction=menu.addAction(QIcon(":/attachment.png"),
-                tr("Attachment"));
+
+        _addAttachmentAction=menu.addAction(QIcon(":/attachment.png"),tr("Attachment"));
         connect(_addAttachmentAction, SIGNAL(triggered(bool)),this, SLOT(addMarkerAttachment()));
         _addAttachmentAction->setCheckable(true);
         _addAttachmentAction->setData(AttachmentItem);
+
+        _addImageAction=menu.addAction(QIcon(":/editaddimage.png"),tr("Image"));
+        connect(_addImageAction, SIGNAL(triggered(bool)),this, SLOT(addMarkerAttachment()));
+        _addImageAction->setCheckable(true);
+        _addImageAction->setData(ImageItem);
         menu.exec(QCursor::pos());
         }
 }
+
+#if 0
+void NodeWidget::enterEvent(QEvent *event)
+{
+
+    qDebug()<<"mat EnterEvent";
+    emit(showimage(_Imagetest));
+}
+
+void NodeWidget::leaveEvent(QEvent *event)
+{
+    qDebug()<<"mat LeaveEvent";
+    emit(closeimage());
+
+}
+#endif

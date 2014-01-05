@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+public slots:
+
 private:
     Ui::MainWindow *_ui;
     Scene *_scene;
