@@ -73,7 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //_view->scale(qreal(0.8), qreal(0.8));
     _view->setMinimumSize(600, 600);
     _view->setWindowTitle(tr("Node and Arrow Example"));
-
+    //set drag mode to select widgets
+    _view->setDragMode(QGraphicsView::RubberBandDrag);
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(_view);
     _ui->centralWidget->setLayout(layout);

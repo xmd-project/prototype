@@ -9,6 +9,7 @@
 void Node::init()
 {
     setWidget(new NodeWidget);
+    static_cast<NodeWidget *>(this->widget())->setProxy(this);
     _snapshotimage=0;
     connect(this->widget(),SIGNAL(showimage(QString)),this,SLOT(showSnapShot(QString)));
     connect(this->widget(),SIGNAL(closeimage()),this,SLOT(closeSnapShot()));
@@ -34,6 +35,7 @@ Node::~Node()
 {
     delete _snapshotimage;
 }
+
 void Node::showSnapShot(QString imagefilename)
 {
     //set scale factor (hard code)
@@ -53,6 +55,8 @@ void Node::showSnapShot(QString imagefilename)
     _snapshotimage->setPixmap(pixmaphere);
     //show image in the centre
     _snapshotimage->setPos(QPointF(-imagewidth/2,-imageheight/2));
+    _snapshotimage->setZValue(MAX_VALUE);  //todo, not take effect?
+    //qDebug()<<"image Zvalue:" << _snapshotimage;
     this->scene()->addItem((_snapshotimage));
 }
 
@@ -106,6 +110,7 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 #endif
+
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     //qDebug() << change;

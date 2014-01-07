@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>120</width>
+    <width>206</width>
     <height>58</height>
    </rect>
   </property>
@@ -20,7 +20,7 @@
    <string>Form</string>
   </property>
   <property name="windowOpacity">
-   <double>0.600000000000000</double>
+   <double>1.000000000000000</double>
   </property>
   <property name="styleSheet">
    <string notr="true"/>

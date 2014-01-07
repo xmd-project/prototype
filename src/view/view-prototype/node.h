@@ -3,6 +3,7 @@
 
 #include <QGraphicsProxyWidget>
 #include <QList>
+#include <limits>
 
 QT_BEGIN_NAMESPACE
 class QEvent;
@@ -10,7 +11,8 @@ class QGraphicsSceneMouseEvent;
 QT_END_NAMESPACE
 
 class Edge;
-
+//global var
+const qreal MAX_VALUE=std::numeric_limits<double>::max();
 class Node : public QGraphicsProxyWidget
 {
     Q_OBJECT

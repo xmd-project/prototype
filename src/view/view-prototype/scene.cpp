@@ -1,6 +1,7 @@
 #include "scene.h"
 #include "node.h"
 #include <QGraphicsSceneMouseEvent>
+#include <QDebug>
 
 Scene::Scene(QObject *parent) :
     QGraphicsScene (parent)
@@ -21,6 +22,15 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+#if 0 //for testing
+    QList<QGraphicsItem*> items = selectedItems();
+    for (int i=0; i<items.count(); i++)
+    {
+        if(items.at(i)->isSelected()) {
+            qDebug()<<"selected:"<<items.at(i);
+        }
+    }
+#endif
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 

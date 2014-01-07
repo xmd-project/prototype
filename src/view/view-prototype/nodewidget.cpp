@@ -9,17 +9,19 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMouseEvent>
-#include <QPainter>
 #include <QPixmap>
-#include <QDesktopWidget>
-#include <QScreen>
-
+#include <QPainter>
+#include <QGraphicsProxyWidget>
+//test
+QRubberBand *rubberBand=0;
+QPoint origin;
 NodeWidget::NodeWidget(QWidget *parent) :
     QWidget(parent), /*_ui(new Ui::NodeWidget),*/_uiNode(new Ui::Form),_data(new NodeData)
 {
     //_ui->setupUi(this);
     _uiNode->setupUi(this);
     _uiNode->HlayoutMarker->setDirection(QBoxLayout::RightToLeft);
+    _getFocus=false;
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Window,QBrush(QPixmap(":/showgrid.png")));
     this->setPalette(palette);
@@ -31,6 +33,11 @@ NodeWidget::~NodeWidget()
 {
     delete _uiNode;
     //delete _ui;
+}
+
+void NodeWidget::setProxy(QGraphicsProxyWidget *proxy)
+{
+    _proxy = proxy;
 }
 
 void NodeWidget::mouseDoubleClickEvent(QMouseEvent *event)
@@ -89,23 +96,26 @@ void NodeWidget::zoominImage()
 void NodeWidget::addMarkerAttachment()
 {
     //qDebug()<<"add web link to Qwidget";
-    QString inputstr;
+    QString inputstr,defaultstr;
     DataType curType;
     QAction *ita=qobject_cast<QAction*>(sender());
     if(ita->data().toInt()==MarkerItem){
         inputstr=tr("Add Marker:");
         curType=MarkerItem;
+        defaultstr=tr("www.163.com");
     } else if (ita->data().toInt() ==AttachmentItem) {
         inputstr=tr("Add Attachment");
         curType=AttachmentItem;
+        defaultstr=tr("c:/a.log");
     } else if (ita->data().toInt() == ImageItem) {
         inputstr=tr("Add Image");
         curType=ImageItem;
+        defaultstr=tr("c:/test.jpg");
     } else {
         inputstr=tr("Add Unknown Type...");
     }
     QString Strtmp = QInputDialog::getText(0, tr("InputDialog"),
-                                    inputstr, QLineEdit::Normal,0, 0);
+                                    inputstr, QLineEdit::Normal,defaultstr, 0);
     if(Strtmp.isEmpty())
         return;
     if (curType != ImageItem) {
@@ -159,20 +169,47 @@ void NodeWidget::mousePressEvent(QMouseEvent *event)
         _addImageAction->setData(ImageItem);
         menu.exec(QCursor::pos());
         }
+    else if (event->button()==Qt::LeftButton){
+        //qDebug()<<"set focus...";
+        _getFocus=true;
+        this->update();
+    }
 }
 
-#if 0
+void NodeWidget::paintEvent(QPaintEvent *event)
+{
+    QPainter painter(this);
+    bool isSelectedParent=_proxy->isSelected();
+    if(_getFocus || isSelectedParent){
+        //qDebug()<<"draw  red rect...";
+        QPen pen;  // creates a default pen
+
+        pen.setStyle(Qt::DashDotLine);
+        pen.setWidth(3);
+        pen.setBrush(Qt::red);
+        painter.setPen(pen);
+    } else {
+        //QWidget::paintEvent(event);
+        //qDebug()<<"draw default rect...";
+    }
+    painter.drawRect(this->rect());
+}
+
 void NodeWidget::enterEvent(QEvent *event)
 {
 
-    qDebug()<<"mat EnterEvent";
-    emit(showimage(_Imagetest));
+    //qDebug()<<"mat EnterEvent";
+    this->setWindowOpacity(0.5);
+    QWidget::enterEvent(event);
 }
 
 void NodeWidget::leaveEvent(QEvent *event)
 {
-    qDebug()<<"mat LeaveEvent";
-    emit(closeimage());
-
+    //qDebug()<<"mat LeaveEvent";
+    this->setWindowOpacity(1);
+    QWidget::leaveEvent(event);
+    _getFocus=false;
+    this->update();
 }
-#endif
+
+

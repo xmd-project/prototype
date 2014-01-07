@@ -44,11 +44,15 @@ class NodeWidget : public QWidget
 public:
     explicit NodeWidget(QWidget *parent = 0);
     ~NodeWidget();
+    void setProxy(QGraphicsProxyWidget *proxy);
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
-    //void enterEvent(QEvent *event);
-    //void leaveEvent(QEvent *event);
+    //void mouseMoveEvent(QMouseEvent *);
+    //void mouseReleaseEvent(QMouseEvent *);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void paintEvent(QPaintEvent *event);
 public slots:
     void addMarkerAttachment();
     void openMarker();
@@ -62,6 +66,8 @@ private:
    QAction *_addAttachmentAction;
    QAction *_addMarkerAction;
    QAction *_addImageAction;
+   bool _getFocus;
+   QGraphicsProxyWidget *_proxy;
 signals:
    void showimage(QString);
    void closeimage();
