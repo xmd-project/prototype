@@ -5,6 +5,7 @@
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
+class QGraphicsLineItem;
 QT_END_NAMESPACE
 
 class Scene : public QGraphicsScene
@@ -17,6 +18,8 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent);
+private:
+    QGraphicsLineItem *edgeIndicator;
 };
 
 #endif // SCENE_H

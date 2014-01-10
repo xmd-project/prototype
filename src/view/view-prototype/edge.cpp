@@ -89,7 +89,7 @@ QRectF Edge::boundingRect() const
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    if (!_source || !_dest)
+    if (!_source || !_dest || _source->collidesWithItem(_dest))
         return;
 
     QLineF line(_sourcePoint, _destPoint);
@@ -109,12 +109,12 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
                                                    cos(angle + PI / 3) * _arrowSize);
     QPointF sourceArrowP2 = _sourcePoint + QPointF(sin(angle + PI - PI / 3) * _arrowSize,
                                                    cos(angle + PI - PI / 3) * _arrowSize);
-    QPointF destArrowP1 = _destPoint + QPointF(sin(angle - PI / 3) * _arrowSize,
-                                               cos(angle - PI / 3) * _arrowSize);
-    QPointF destArrowP2 = _destPoint + QPointF(sin(angle - PI + PI / 3) * _arrowSize,
-                                               cos(angle - PI + PI / 3) * _arrowSize);
+//    QPointF destArrowP1 = _destPoint + QPointF(sin(angle - PI / 3) * _arrowSize,
+//                                               cos(angle - PI / 3) * _arrowSize);
+//    QPointF destArrowP2 = _destPoint + QPointF(sin(angle - PI + PI / 3) * _arrowSize,
+//                                               cos(angle - PI + PI / 3) * _arrowSize);
 
     painter->setBrush(Qt::black);
     painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
-    painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
+    //painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }
