@@ -42,6 +42,7 @@ void NodeWidget::setProxy(QGraphicsProxyWidget *proxy)
 
 void NodeWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event);
     //qDebug()<<"add mouseDoubleClickEvent Qwidget";
     QString Str = QInputDialog::getText(0, tr("Input Dialog"),
                                         tr("Add Text Note:"), QLineEdit::Normal,0,0);
@@ -178,6 +179,7 @@ void NodeWidget::mousePressEvent(QMouseEvent *event)
 
 void NodeWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
     QPainter painter(this);
     bool isSelectedParent=_proxy->isSelected();
     if(_getFocus || isSelectedParent){

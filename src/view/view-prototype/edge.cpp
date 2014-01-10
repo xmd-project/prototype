@@ -13,10 +13,11 @@ static const double TWO_PI = 2.0 * PI;
 }
 
 Edge::Edge(Node *sourceNode, Node *destNode, QGraphicsItem *parent) :
+    QGraphicsItem(parent),
     _source(sourceNode), _dest(destNode),
     _sourcePoint(0,0), _destPoint(0,0),
-    _arrowSize(10),
-    QGraphicsItem(parent)
+    _arrowSize(10)
+
 {
     setAcceptedMouseButtons(0);
     _source->addEdge(this);

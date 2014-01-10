@@ -30,8 +30,8 @@ signals:
     void showimage(QString);
     void closeimage();
 protected:
-    void enterEvent(QEvent *event){emit(showimage(_image));}
-    void leaveEvent(QEvent *event){emit(closeimage());}
+    void enterEvent(QEvent *event){Q_UNUSED(event); emit(showimage(_image));}
+    void leaveEvent(QEvent *event){Q_UNUSED(event); emit(closeimage());}
 private:
     QString _image;
 };
