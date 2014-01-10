@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QDebug>
+#include <limits>
 #include <cassert>
 
 void Node::init()
@@ -17,6 +18,8 @@ void Node::init()
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
              |QGraphicsItem::ItemSendsScenePositionChanges);
 }
+
+const qreal Node::MAX_VALUE = std::numeric_limits<double>::max();
 
 Node::Node(QGraphicsProxyWidget *parent) :
     QGraphicsProxyWidget(parent, Qt::Widget)
