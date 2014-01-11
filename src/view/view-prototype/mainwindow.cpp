@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 #include <QHBoxLayout>
 #include <cassert>
+#include <QDebug>
 
 namespace {
 #ifndef QT_NO_DEBUG
@@ -78,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(_view);
     _ui->centralWidget->setLayout(layout);
+    createActions();
+    createToolbar();
+    createConnections();
 
     setWindowTitle(tr("XMD Prototype"));
 #ifndef QT_NO_DEBUG
@@ -88,5 +92,119 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete _ui;
+}
+
+void MainWindow::createActions()
+{
+
+    _addRectAction = new QAction(QIcon(":/addrect.png"),
+            tr("Add Rect..."), this);
+    _addLineAction = new QAction(QIcon(":/addline.png"),
+            tr("Add Line..."), this);
+    _addArrowAction = new QAction(QIcon(":/addarrow.png"),
+            tr("Add Arrow..."), this);
+    _addCircleAction = new QAction(QIcon(":/addcircle.png"),
+            tr("Add Circle..."), this);
+    _addCurveAction = new QAction(QIcon(":/addcurve.png"),
+            tr("Add Curve..."), this);
+    _editCopyAction = new QAction(QIcon(":/editcopy.png"),
+            tr("Copy..."), this);
+    _editCutAction = new QAction(QIcon(":/editcut.png"),
+            tr("Copy..."), this);
+    _editPasteAction = new QAction(QIcon(":/editpaste.png"),
+            tr("Copy..."), this);
+}
+
+void MainWindow::createConnections()
+{
+    connect(_addRectAction, SIGNAL(triggered()),
+            this, SLOT(addRect()));
+    connect(_addLineAction, SIGNAL(triggered()),
+            this, SLOT(addLine()));
+    connect(_addArrowAction, SIGNAL(triggered()),
+            this, SLOT(addArrow()));
+    connect(_addCircleAction, SIGNAL(triggered()),
+            this, SLOT(addCircle()));
+    connect(_addCurveAction,SIGNAL(triggered()),
+            this, SLOT(addCurve()));
+    connect(_editCopyAction, SIGNAL(triggered()),
+            this, SLOT(editCopy()));
+    connect(_editPasteAction, SIGNAL(triggered()),
+            this, SLOT(editPaste()));
+    connect(_editCutAction,SIGNAL(triggered()),
+            this, SLOT(editCut()));
+}
+void MainWindow::createToolbar()
+{
+    QAction *separator=0;
+    QToolBar *addShapToolBar = addToolBar(tr("AddShap"));
+    populateMenuAndToolBar(addShapToolBar, QList<QAction*>()
+            << _addRectAction << _addCircleAction << _addCurveAction
+            << _addLineAction << _addArrowAction
+            << separator << _editCopyAction
+            << _editCutAction << _editPasteAction << separator);
+}
+
+void MainWindow::populateMenuAndToolBar(QToolBar *toolBar, QList<QAction*> actions)
+{
+    foreach (QAction *action, actions) {
+        if (!action) {
+            toolBar->addSeparator();
+        }
+        else {
+            toolBar->addAction(action);
+        }
+    }
+}
+void MainWindow::addRect()
+{
+    QGraphicsRectItem *rect = new QGraphicsRectItem(0);
+    rect->setFlags(QGraphicsItem::ItemIsSelectable|
+#if QT_VERSION >= 0x040600
+             QGraphicsItem::ItemSendsGeometryChanges|
+#endif
+             QGraphicsItem::ItemIsMovable|
+             QGraphicsItem::ItemIsFocusable);
+    QRect rect_=QRect(-620,-730,50,60);
+    rect->setPos(rect_.center());
+    rect->setRect(QRectF(QPointF(-rect_.width() / 2.0,
+                           -rect_.height() / 2.0), rect_.size()));
+    _scene->clearSelection();
+    rect->setSelected(true);
+    rect->setFocus();
+    _scene->addItem(rect);
+    qDebug()<<"add rect item...";
+}
+
+void MainWindow::addLine()
+{
+
+}
+void MainWindow::addArrow()
+{
+}
+
+void MainWindow::addCircle()
+{
+
+}
+void MainWindow::addCurve()
+{
+
+}
+
+void MainWindow::editCopy()
+{
+
+}
+
+void MainWindow::editPaste()
+{
+
+}
+
+void MainWindow::editCut()
+{
+
 }
 

@@ -33,5 +33,10 @@
         <file alias="weblink.png">images/weblink.png</file>
         <file alias="nodeproxy.png">images/nodeproxy.png</file>
         <file alias="editaddimage.png">images/editaddimage.png</file>
+        <file alias="addarrow.png">images/addarrow.png</file>
+        <file alias="addcircle.png">images/addcircle.png</file>
+        <file alias="addcurve.png">images/addcurve.png</file>
+        <file alias="addline.png">images/addline.png</file>
+        <file alias="addrect.png">images/addrect.png</file>
     </qresource>
 </RCC>
