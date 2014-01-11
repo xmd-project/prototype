@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 #include <QDebug>
+#include <limits>
 #include <cassert>
 
 void Node::init()
@@ -18,6 +19,8 @@ void Node::init()
              |QGraphicsItem::ItemSendsScenePositionChanges);
     setFocusPolicy(Qt::StrongFocus);
 }
+
+const qreal Node::MAX_VALUE = std::numeric_limits<double>::max();
 
 Node::Node(QGraphicsProxyWidget *parent) :
     QGraphicsProxyWidget(parent, Qt::Widget)

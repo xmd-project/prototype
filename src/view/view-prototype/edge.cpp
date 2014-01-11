@@ -2,6 +2,7 @@
 #include "node.h"
 #include <QPainter>
 #include <cmath>
+#include <cassert>
 using std::acos;
 using std::cos;
 using std::sin;
@@ -13,10 +14,11 @@ static const double TWO_PI = 2.0 * PI;
 }
 
 Edge::Edge(Node *sourceNode, Node *destNode, QGraphicsItem *parent) :
+    QGraphicsItem(parent),
     _source(sourceNode), _dest(destNode),
     _sourcePoint(0,0), _destPoint(0,0),
-    _arrowSize(10),
-    QGraphicsItem(parent)
+    _arrowSize(10)
+
 {
     setAcceptedMouseButtons(0);
     _source->addEdge(this);
@@ -27,14 +29,41 @@ void Edge::adjust()
 {
     if (!_source || !_dest)
         return;
-
-    QLineF line(mapFromItem(_source, 0, 0), mapFromItem(_dest, 0, 0));
-    qreal length = line.length();
-
+    adjustTerminalPoints();
     prepareGeometryChange();
 
-    if (length > qreal(20.)) {
-        enum {EDGE_OFFSET_FACTOR = 5};
+}
+
+QPointF Edge::findTerminalPoint(const Node *node) const
+{
+    assert(node==_source || node==_dest);
+    const Node *endNode = node==_source ? _dest : _source;
+    QPointF nodePos = mapFromItem(node, node->boundingRect().center());
+    QPointF endNodePos = mapFromItem(endNode, endNode->boundingRect().center());
+    QLineF centerLine(nodePos,endNodePos);
+    QPolygonF boundingPolygon = mapFromItem(endNode, endNode->boundingRect());
+    QPointF p1 = boundingPolygon.first();
+    QPointF p2;
+    QPointF intersectPoint;
+    for (int i = 1; i < boundingPolygon.count(); ++i) {
+        p2 = boundingPolygon.at(i);
+        QLineF polyLine = QLineF(p1, p2);
+        QLineF::IntersectType intersectType =
+                polyLine.intersect(centerLine, &intersectPoint);
+        if (intersectType == QLineF::BoundedIntersection)
+            break;
+        p1 = p2;
+    }
+    return intersectPoint;
+}
+
+void Edge::adjustTerminalPoints()
+{
+    QLineF line(findTerminalPoint(_source), findTerminalPoint(_dest));
+    qreal length = line.length();
+    enum {SHORTEST_EDGE_LENTH = 20};
+    if (length > qreal(SHORTEST_EDGE_LENTH)) {
+        enum {EDGE_OFFSET_FACTOR = 3};
         QPointF edgeOffset((line.dx() * EDGE_OFFSET_FACTOR) / length,
                            (line.dy() * EDGE_OFFSET_FACTOR) / length);
         _sourcePoint = line.p1() + edgeOffset;
@@ -60,7 +89,7 @@ QRectF Edge::boundingRect() const
 
 void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    if (!_source || !_dest)
+    if (!_source || !_dest || _source->collidesWithItem(_dest))
         return;
 
     QLineF line(_sourcePoint, _destPoint);
@@ -80,12 +109,12 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
                                                    cos(angle + PI / 3) * _arrowSize);
     QPointF sourceArrowP2 = _sourcePoint + QPointF(sin(angle + PI - PI / 3) * _arrowSize,
                                                    cos(angle + PI - PI / 3) * _arrowSize);
-    QPointF destArrowP1 = _destPoint + QPointF(sin(angle - PI / 3) * _arrowSize,
-                                               cos(angle - PI / 3) * _arrowSize);
-    QPointF destArrowP2 = _destPoint + QPointF(sin(angle - PI + PI / 3) * _arrowSize,
-                                               cos(angle - PI + PI / 3) * _arrowSize);
+//    QPointF destArrowP1 = _destPoint + QPointF(sin(angle - PI / 3) * _arrowSize,
+//                                               cos(angle - PI / 3) * _arrowSize);
+//    QPointF destArrowP2 = _destPoint + QPointF(sin(angle - PI + PI / 3) * _arrowSize,
+//                                               cos(angle - PI + PI / 3) * _arrowSize);
 
     painter->setBrush(Qt::black);
     painter->drawPolygon(QPolygonF() << line.p1() << sourceArrowP1 << sourceArrowP2);
-    painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
+    //painter->drawPolygon(QPolygonF() << line.p2() << destArrowP1 << destArrowP2);
 }

@@ -5,6 +5,10 @@
 
 class Node;
 
+QT_BEGIN_NAMESPACE
+class QLineF;
+QT_END_NAMESPACE
+
 class Edge : public QGraphicsItem
 {
 public:
@@ -14,12 +18,15 @@ public:
     Node *sourceNode() const { return _source; }
     Node *destNode() const { return _dest; }
     void adjust();
+private:
+    QPointF findTerminalPoint(const Node *node) const;
+    void adjustTerminalPoints();
 protected:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
-    Node *_source, *_dest;
-    QPointF _sourcePoint, _destPoint;
+    Node *_source, *_dest; ///! terminal nodes
+    QPointF _sourcePoint, _destPoint; ///! terminal points
     qreal _arrowSize;
 };
 
