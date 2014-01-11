@@ -25,12 +25,14 @@ public:
     ~Node();
     QList<Edge *> edges() const { return _edges; }
     void addEdge(Edge *edge);
+    void removeEdge(Edge *edge);
 signals:
 public slots:
     void showSnapShot(QString imagefilename);
     void closeSnapShot();
 protected:
     bool sceneEvent(QEvent *event);
+    void keyPressEvent(QKeyEvent *event);
     //hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 #if 0
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

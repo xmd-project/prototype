@@ -212,4 +212,12 @@ void NodeWidget::leaveEvent(QEvent *event)
     this->update();
 }
 
+void NodeWidget::keyPressEvent(QKeyEvent *kevent)
+{
+    if(kevent->key() == Qt::Key_Delete) {
+        //delete a Node as well as the edge pointed to it
+        qDebug()<<"click delete key";
+
+    }
+}
 

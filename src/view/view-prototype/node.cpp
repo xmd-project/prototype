@@ -16,6 +16,7 @@ void Node::init()
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
              |QGraphicsItem::ItemSendsScenePositionChanges);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 Node::Node(QGraphicsProxyWidget *parent) :
@@ -77,6 +78,12 @@ void Node::addEdge(Edge *edge)
     edge->adjust();
 }
 
+void Node::removeEdge(Edge *edge)
+{
+    assert(edge);
+    _edges.removeAll(edge);
+}
+
 bool Node::sceneEvent(QEvent *event)
 {
     bool result = QGraphicsProxyWidget::sceneEvent(event);
@@ -109,6 +116,8 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     update();
     QGraphicsItem::mouseReleaseEvent(event);
 }
+
+
 #endif
 
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -124,4 +133,19 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
         break;
     };
     return QGraphicsProxyWidget::itemChange(change, value);
+}
+
+void Node::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Delete) {
+        //delete a Node as well as the edge pointed to it
+        foreach (Edge *edge, _edges) {
+            this->scene()->removeItem(edge);
+            edge->sourceNode()->removeEdge(edge);
+            edge->destNode()->removeEdge(edge);
+            delete edge;
+        }
+        this->scene()->removeItem(this);
+        delete this->widget();
+    }
 }
