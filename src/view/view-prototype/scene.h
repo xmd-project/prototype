@@ -8,6 +8,7 @@ QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
 class QGraphicsLineItem;
 class Node;
+class QPointF;
 QT_END_NAMESPACE
 
 class Scene : public QGraphicsScene
@@ -25,6 +26,7 @@ private:
     QGraphicsLineItem *_edgeIndicator;
     ShapeType _shape;
     Node *_currentNode;
+    QPointF _lastPoint,_endPoint;
 
 };
 
