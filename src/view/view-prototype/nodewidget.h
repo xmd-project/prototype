@@ -2,6 +2,7 @@
 #define NODEWIDGET_H
 
 #include "nodedata.h"
+#include "global.h"
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -36,7 +37,6 @@ private:
     QString _image;
 };
 
-enum DataType{MarkerItem,AttachmentItem,TextItem,ImageItem};
 
 class NodeWidget : public QWidget
 {

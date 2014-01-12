@@ -25,7 +25,8 @@ HEADERS  += mainwindow.h \
     node.h \
     edge.h \
     nodewidget.h \
-    nodedata.h
+    nodedata.h \
+    global.h
 
 FORMS    += mainwindow.ui \
     nodewidgetexample.ui \

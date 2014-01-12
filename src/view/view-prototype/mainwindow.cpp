@@ -158,6 +158,8 @@ void MainWindow::populateMenuAndToolBar(QToolBar *toolBar, QList<QAction*> actio
 }
 void MainWindow::addRect()
 {
+    qDebug()<<"add rect item...";
+#if 0
     QGraphicsRectItem *rect = new QGraphicsRectItem(0);
     rect->setFlags(QGraphicsItem::ItemIsSelectable|
 #if QT_VERSION >= 0x040600
@@ -173,24 +175,26 @@ void MainWindow::addRect()
     rect->setSelected(true);
     rect->setFocus();
     _scene->addItem(rect);
-    //qDebug()<<"add rect item...";
+#endif
+    _scene->setShape(Rect);
 }
 
 void MainWindow::addLine()
 {
-
+    _scene->setShape(Line);
 }
 void MainWindow::addArrow()
 {
+    _scene->setShape(Arrow);
 }
 
 void MainWindow::addCircle()
 {
-
+    _scene->setShape(Circle);
 }
 void MainWindow::addCurve()
 {
-
+    _scene->setShape(Curve);
 }
 
 void MainWindow::editCopy()
