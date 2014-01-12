@@ -12,9 +12,7 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QGraphicsProxyWidget>
-//test
-QRubberBand *rubberBand=0;
-QPoint origin;
+
 NodeWidget::NodeWidget(QWidget *parent) :
     QWidget(parent), /*_ui(new Ui::NodeWidget),*/_uiNode(new Ui::Form),_data(new NodeData)
 {
