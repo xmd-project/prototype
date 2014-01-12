@@ -173,7 +173,7 @@ void MainWindow::addRect()
     rect->setSelected(true);
     rect->setFocus();
     _scene->addItem(rect);
-    qDebug()<<"add rect item...";
+    //qDebug()<<"add rect item...";
 }
 
 void MainWindow::addLine()
