@@ -93,7 +93,7 @@ void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
                            QGraphicsItem::ItemIsMovable|
                            QGraphicsItem::ItemIsFocusable);
             QRect rect_=QRect(0,_currentNode->size().height(),_currentNode->size().width(),80);
-            //qDebug()<<"Rect:" << rect_ <<"lastp:"<<_lastPoint << " endP:"<<_endPoint;
+            //qDebug()<<"Rect:" << rect_;
             rect->setPos(rect_.center());
             rect->setRect(QRectF(QPointF(-rect_.width() / 2.0,
                                          -rect_.height() / 2.0), rect_.size()));
@@ -101,7 +101,6 @@ void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
             rect->setSelected(true);
             rect->setFocus();
             addItem(rect);
-            //_currentNode = 0;
         }
 
     }else{
