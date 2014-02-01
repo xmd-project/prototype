@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>images/bring_forward.png</file>
+        <file>images/bring_to_front.png</file>
+        <file>images/copy.png</file>
+        <file>images/curve.png</file>
+        <file>images/cut.png</file>
+        <file>images/delete.png</file>
+        <file>images/effect.png</file>
+        <file>images/fill.png</file>
+        <file>images/find.png</file>
+        <file>images/group.png</file>
+        <file>images/line.png</file>
+        <file>images/open.png</file>
+        <file>images/outline.png</file>
+        <file>images/oval.png</file>
+        <file>images/paste.png</file>
+        <file>images/polygon.png</file>
+        <file>images/rectangle.png</file>
+        <file>images/redo.png</file>
+        <file>images/rotate.png</file>
+        <file>images/save.png</file>
+        <file>images/saveAll.png</file>
+        <file>images/send_backward.png</file>
+        <file>images/send_to_back.png</file>
+        <file>images/undo.png</file>
+        <file>images/ungroup.png</file>
+        <file>images/text.png</file>
+    </qresource>
+</RCC>
