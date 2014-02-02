@@ -26,5 +26,6 @@
         <file>images/undo.png</file>
         <file>images/ungroup.png</file>
         <file>images/text.png</file>
+        <file>images/app.png</file>
     </qresource>
 </RCC>
