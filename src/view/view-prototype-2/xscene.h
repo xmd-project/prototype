@@ -27,6 +27,8 @@ public slots:
     void setMode(Mode mode = NORMAL) { _mode = mode; }
 
 private:
+    void unselectAll();
+private:
     Mode _mode;
     QGraphicsItem *_itemIndicator;
     QPointF _lastMousePressScenePos;

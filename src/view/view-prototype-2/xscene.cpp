@@ -24,8 +24,8 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     default:
         Q_ASSERT(_mode == NORMAL);
+        QGraphicsScene::mousePressEvent(mouseEvent);
     }
-    QGraphicsScene::mousePressEvent(mouseEvent);
     _lastMousePressScenePos = mouseEvent->scenePos();
 }
 
@@ -45,15 +45,24 @@ void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+void XScene::unselectAll()
+{
+    foreach (QGraphicsItem *item, selectedItems()) {
+        item->setSelected(false);
+    }
+}
+
 void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (_itemIndicator) {
+        unselectAll();
         // replace an empty graphics item with the default size
         if (XRect::Type == _itemIndicator->type()) {
             XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
             Q_ASSERT(xrect && _mode == INS_RECT);
             if (xrect->rect().isEmpty())
                 xrect->setRectDefault();
+            xrect->setSelected(true);
             emit graphicsItemInserted(xrect);
         } else {
             Q_ASSERT(!"Unknown graphics item!");

@@ -20,6 +20,7 @@ XMainWindow::XMainWindow(QWidget *parent) :
 void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
 {
     _scene->setMode();
+    _view->setDragMode(QGraphicsView::RubberBandDrag);
     switch (item->type()) {
     case XRect::Type: _action[INS_RECT]->setChecked(false); break;
     default:;
@@ -186,6 +187,7 @@ void XMainWindow::find()
 
 void XMainWindow::insertRect()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
     _scene->setMode(XScene::INS_RECT);
 }
 
