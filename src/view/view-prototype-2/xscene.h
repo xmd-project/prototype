@@ -10,6 +10,7 @@ public:
     explicit XScene(QObject *parent = 0);
 
 signals:
+    void graphicsItemInserted(QGraphicsItem *item);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -23,7 +24,7 @@ public:
     };
 
 public slots:
-    void setMode(Mode mode) { _mode = mode; }
+    void setMode(Mode mode = NORMAL) { _mode = mode; }
 
 private:
     Mode _mode;

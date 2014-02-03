@@ -10,10 +10,11 @@ public:
 
     enum { Type = UserType + 1 };
     int type() const { return Type; }
+
 private:
     enum {_DEFAULT_WIDTH=90, _DEFAULT_HEIGHT=90};
 public:
-    void setRectDefault() { setRect(QRectF(0, 0, _DEFAULT_WIDTH, _DEFAULT_HEIGHT)); }
+    void setRectDefault();
     ///TODO: Attractors
 };
 

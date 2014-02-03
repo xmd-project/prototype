@@ -31,7 +31,7 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (_itemIndicator) {
+    if (INS_RECT == _mode && _itemIndicator) {
         if (XRect::Type == _itemIndicator->type()) {
             XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
             Q_ASSERT(xrect && _mode == INS_RECT);
@@ -40,7 +40,7 @@ void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
         } else {
             Q_ASSERT(!"Unknown graphics item!");
         }
-    } else {
+    } else if (NORMAL == _mode) {
         QGraphicsScene::mouseMoveEvent(mouseEvent);
     }
 }
@@ -54,6 +54,7 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             Q_ASSERT(xrect && _mode == INS_RECT);
             if (xrect->rect().isEmpty())
                 xrect->setRectDefault();
+            emit graphicsItemInserted(xrect);
         } else {
             Q_ASSERT(!"Unknown graphics item!");
         }
@@ -61,9 +62,6 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         //delete _itemIndicator;
         _itemIndicator = 0;
     }
-
-    if (_mode != NORMAL)
-        setMode(NORMAL);
 
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }

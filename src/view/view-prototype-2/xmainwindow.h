@@ -9,6 +9,7 @@ class XGraphicsView;
 QT_BEGIN_NAMESPACE
 class QToolBar;
 class QAction;
+class QGraphicsItem;
 QT_END_NAMESPACE
 
 class XMainWindow : public QMainWindow
@@ -16,6 +17,9 @@ class XMainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit XMainWindow(QWidget *parent = 0);
+
+private slots:
+    void graphicsItemInserted(QGraphicsItem *item);
 
 private:
     XScene *_scene;
@@ -25,14 +29,31 @@ private:
         _INIT_XSCENE_WIDTH = 5000, _INIT_XSCENE_HEIGHT = 5000
     };
 private:
-    void initView();
+    void initXScene();
+    void initXView();
     void initCentralWidget();
 
+private:
+    enum __ToolBar { // DO NOT modify any of the following values!
+        FILE, EDIT, CLIPBOARD, INSERT, ARRANGE,
+        NUM_TOOLBARS // NUM_TOOLBARS must be the last element! It indicates how many toolbars there are.
+    };
+    QToolBar *_toolBar[NUM_TOOLBARS];
+
+    enum __Action { // DO NOT modify any of the following values!
+        SAVE, OPEN,
+        DEL, UNDO, REDO, FIND,
+        INS_RECT, INS_LINE, INS_OVAL, INS_TEXT, INS_CURVE, INS_POLYGON,
+        BRING_FORWARD, SEND_BACKWARD, GROUP, UNGROUP, ROTATE,
+        CUT, COPY, PASTE,
+        NUM_ACTIONS  // NUM_ACTIONS must be the last element! It indicates how many actions there are.
+    };
+    QAction *_action[NUM_ACTIONS];
 private:
     void initFileToolBar();
     void initEditToolBar();
     void initClipboardToolBar();
-    void initAddToolBar();
+    void initInsertToolBar();
     void initArrangeToolBar();
     ///TODO:
     ///void initFontToolBar();
@@ -49,13 +70,13 @@ private slots:
     void undo();
     void redo();
     void find();
-    // draw: add actions
-    void addRect();
-    void addLine();
-    void addOval();
-    void addText();
-    void addCurve();
-    void addPolygon();
+    // draw: insert actions
+    void insertRect();
+    void insertLine();
+    void insertOval();
+    void insertText();
+    void insertCurve();
+    void insertPolygon();
     // draw: arrange actions
     void bringForward();
     void sendBackward();

@@ -1,6 +1,8 @@
 #include "xmainwindow.h"
 #include "xscene.h"
 #include "xgraphicsview.h"
+#include "xrect.h"
+#include <QGraphicsItem>
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QAction>
@@ -10,15 +12,30 @@ XMainWindow::XMainWindow(QWidget *parent) :
     _scene(new XScene),
     _view(new XGraphicsView)
 {
+    initXScene();
     initCentralWidget();
     initToolBars();
 }
 
-void XMainWindow::initView()
+void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
+{
+    _scene->setMode();
+    switch (item->type()) {
+    case XRect::Type: _action[INS_RECT]->setChecked(false); break;
+    default:;
+    }
+}
+
+void XMainWindow::initXScene()
 {
     // setting scene rectangle is necessary for creating and locating a graphics item
     _scene->setSceneRect(QRectF(0, 0, _INIT_XSCENE_WIDTH, _INIT_XSCENE_HEIGHT));
+    connect(_scene, SIGNAL(graphicsItemInserted(QGraphicsItem*)),
+            this, SLOT(graphicsItemInserted(QGraphicsItem*)));
+}
 
+void XMainWindow::initXView()
+{
     _view->setScene(_scene);
     _view->setCacheMode(QGraphicsView::CacheBackground);
     _view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -31,7 +48,7 @@ void XMainWindow::initView()
 
 void XMainWindow::initCentralWidget()
 {
-    initView();
+    initXView();
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(_view);
@@ -47,108 +64,100 @@ void XMainWindow::initToolBars()
     initFileToolBar();
     initEditToolBar();
     initClipboardToolBar();
-    initAddToolBar();
+    initInsertToolBar();
     initArrangeToolBar();
 }
 
 void XMainWindow::initFileToolBar()
 {
-    QToolBar *tb = 0;
-    QAction *act = 0;
-
-    tb = addToolBar(tr("File"));
-    act = tb->addAction(QIcon(":/icon/images/open.png"), tr("&Open"), this, SLOT(open()));
-    act->setShortcut(tr("Ctrl+O"));
-    act->setToolTip(tr("Open (Ctrl+O)"));
-    act = tb->addAction(QIcon(":/icon/images/save.png"), tr("&Save"), this, SLOT(save()));
-    act->setShortcut(tr("Ctrl+S"));
-    act->setToolTip(tr("Save (Ctrl+S)"));
+    _toolBar[FILE] = addToolBar(tr("File"));;
+    _action[OPEN] = _toolBar[FILE]->addAction(QIcon(":/icon/images/open.png"), tr("&Open"), this, SLOT(open()));
+    _action[OPEN]->setShortcut(tr("Ctrl+O"));
+    _action[OPEN]->setToolTip(tr("Open (Ctrl+O)"));
+    _action[SAVE] = _toolBar[FILE]->addAction(QIcon(":/icon/images/save.png"), tr("&Save"), this, SLOT(save()));
+    _action[SAVE]->setShortcut(tr("Ctrl+S"));
+    _action[SAVE]->setToolTip(tr("Save (Ctrl+S)"));
 }
 
 void XMainWindow::initEditToolBar()
 {
-    QToolBar *tb = 0;
-    QAction *act = 0;
-
-    tb = addToolBar(tr("Edit"));
-    act = tb->addAction(QIcon(":/icon/images/delete.png"), tr("&Delete"), this, SLOT(del()));
-    act->setShortcut(tr("Del"));
-    act->setToolTip(tr("Delete (Del)"));
-    act = tb->addAction(QIcon(":/icon/images/undo.png"), tr("&Undo"), this, SLOT(undo()));
-    act->setShortcut(tr("Ctrl+Z"));
-    act->setToolTip(tr("Undo (Ctrl+Z)"));
-    act = tb->addAction(QIcon(":/icon/images/redo.png"), tr("&Redo"), this, SLOT(redo()));
-    act->setShortcut(tr("Ctrl+Y"));
-    act->setToolTip(tr("Redo (Ctrl+Y)"));
-    act = tb->addAction(QIcon(":/icon/images/find.png"), tr("&Find"), this, SLOT(find()));
-    act->setShortcut(tr("Ctrl+F"));
-    act->setToolTip(tr("Find (Ctrl+F)"));
+    _toolBar[EDIT] = addToolBar(tr("Edit"));
+    _action[DEL] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/delete.png"), tr("&Delete"), this, SLOT(del()));
+    _action[DEL]->setShortcut(tr("Del"));
+    _action[DEL]->setToolTip(tr("Delete (Del)"));
+    _action[UNDO] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/undo.png"), tr("&Undo"), this, SLOT(undo()));
+    _action[UNDO]->setShortcut(tr("Ctrl+Z"));
+    _action[UNDO]->setToolTip(tr("Undo (Ctrl+Z)"));
+    _action[REDO] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/redo.png"), tr("&Redo"), this, SLOT(redo()));
+    _action[REDO]->setShortcut(tr("Ctrl+Y"));
+    _action[REDO]->setToolTip(tr("Redo (Ctrl+Y)"));
+    _action[FIND] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/find.png"), tr("&Find"), this, SLOT(find()));
+    _action[FIND]->setShortcut(tr("Ctrl+F"));
+    _action[FIND]->setToolTip(tr("Find (Ctrl+F)"));
 }
 
 void XMainWindow::initClipboardToolBar()
 {
-    QToolBar *tb = 0;
-    QAction *act = 0;
-
-    tb = addToolBar(tr("Clipboard"));
-    act = tb->addAction(QIcon(":/icon/images/cut.png"), tr("&Cut"), this, SLOT(cut()));
-    act->setShortcut(tr("Ctrl+X"));
-    act->setToolTip(tr("Cut (Ctrl+X)"));
-    act = tb->addAction(QIcon(":/icon/images/copy.png"), tr("&Copy"), this, SLOT(copy()));
-    act->setShortcut(tr("Ctrl+C"));
-    act->setToolTip(tr("Copy (Ctrl+C)"));
-    act = tb->addAction(QIcon(":/icon/images/paste.png"), tr("&Paste"), this, SLOT(paste()));
-    act->setShortcut(tr("Ctrl+V"));
-    act->setToolTip(tr("Paste (Ctrl+V)"));
+    _toolBar[CLIPBOARD] = addToolBar(tr("Clipboard"));
+    _action[CUT] = _toolBar[CLIPBOARD]->addAction(QIcon(":/icon/images/cut.png"), tr("&Cut"), this, SLOT(cut()));
+    _action[CUT]->setShortcut(tr("Ctrl+X"));
+    _action[CUT]->setToolTip(tr("Cut (Ctrl+X)"));
+    _action[COPY] = _toolBar[CLIPBOARD]->addAction(QIcon(":/icon/images/copy.png"), tr("&Copy"), this, SLOT(copy()));
+    _action[COPY]->setShortcut(tr("Ctrl+C"));
+    _action[COPY]->setToolTip(tr("Copy (Ctrl+C)"));
+    _action[PASTE] = _toolBar[CLIPBOARD]->addAction(QIcon(":/icon/images/paste.png"), tr("&Paste"), this, SLOT(paste()));
+    _action[PASTE]->setShortcut(tr("Ctrl+V"));
+    _action[PASTE]->setToolTip(tr("Paste (Ctrl+V)"));
 }
 
-void XMainWindow::initAddToolBar()
+void XMainWindow::initInsertToolBar()
 {
-    QToolBar *tb = 0;
-    QAction *act = 0;
-
-    tb = addToolBar(tr("Add"));
-    act = tb->addAction(QIcon(":/icon/images/rectangle.png"), tr("&Rectangle"), this, SLOT(addRect()));
-    act->setShortcut(tr("Alt+R"));
-    act->setToolTip(tr("Rectangle (Alt+R)"));
-    act = tb->addAction(QIcon(":/icon/images/line.png"), tr("&Line"), this, SLOT(addLine()));
-    act->setShortcut(tr("Alt+L"));
-    act->setToolTip(tr("Line (Alt+L)"));
-    act = tb->addAction(QIcon(":/icon/images/oval.png"), tr("&Oval"), this, SLOT(addOval()));
-    act->setShortcut(tr("Alt+O"));
-    act->setToolTip(tr("Oval (Alt+O)"));
-    act = tb->addAction(QIcon(":/icon/images/text.png"), tr("&Text"), this, SLOT(addText()));
-    act->setShortcut(tr("Alt+T"));
-    act->setToolTip(tr("Text (Alt+T)"));
-    act = tb->addAction(QIcon(":/icon/images/curve.png"), tr("&Curve"), this, SLOT(addCurve()));
-    act->setShortcut(tr("Alt+C"));
-    act->setToolTip(tr("Curve (Alt+C)"));
-    act = tb->addAction(QIcon(":/icon/images/polygon.png"), tr("&Polygon"), this, SLOT(addPolygon()));
-    act->setShortcut(tr("Alt+P"));
-    act->setToolTip(tr("Polygon (Alt+P)"));
+    // All insert actions are checkable
+    _toolBar[INSERT] = addToolBar(tr("Insert"));
+    _action[INS_RECT] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/rectangle.png"), tr("&Rectangle"), this, SLOT(insertRect()));
+    _action[INS_RECT]->setShortcut(tr("Alt+R"));
+    _action[INS_RECT]->setToolTip(tr("Rectangle (Alt+R)"));
+    _action[INS_RECT]->setCheckable(true);
+    _action[INS_LINE] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/line.png"), tr("&Line"), this, SLOT(insertLine()));
+    _action[INS_LINE]->setShortcut(tr("Alt+L"));
+    _action[INS_LINE]->setToolTip(tr("Line (Alt+L)"));
+    _action[INS_LINE]->setCheckable(true);
+    _action[INS_OVAL] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/oval.png"), tr("&Oval"), this, SLOT(insertOval()));
+    _action[INS_OVAL]->setShortcut(tr("Alt+O"));
+    _action[INS_OVAL]->setToolTip(tr("Oval (Alt+O)"));
+    _action[INS_OVAL]->setCheckable(true);
+    _action[INS_TEXT] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/text.png"), tr("&Text"), this, SLOT(insertText()));
+    _action[INS_TEXT]->setShortcut(tr("Alt+T"));
+    _action[INS_TEXT]->setToolTip(tr("Text (Alt+T)"));
+    _action[INS_TEXT]->setCheckable(true);
+    _action[INS_CURVE] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/curve.png"), tr("&Curve"), this, SLOT(insertCurve()));
+    _action[INS_CURVE]->setShortcut(tr("Alt+C"));
+    _action[INS_CURVE]->setToolTip(tr("Curve (Alt+C)"));
+    _action[INS_CURVE]->setCheckable(true);
+    _action[INS_POLYGON] = _toolBar[INSERT]->addAction(QIcon(":/icon/images/polygon.png"), tr("&Polygon"), this, SLOT(insertPolygon()));
+    _action[INS_POLYGON]->setShortcut(tr("Alt+P"));
+    _action[INS_POLYGON]->setToolTip(tr("Polygon (Alt+P)"));
+    _action[INS_POLYGON]->setCheckable(true);
 }
 
 void XMainWindow::initArrangeToolBar()
 {
-    QToolBar *tb = 0;
-    QAction *act = 0;
-
-    tb = addToolBar(tr("Arrange"));
-    act = tb->addAction(QIcon(":/icon/images/bring_forward.png"), tr("Bring &Forward"), this, SLOT(bringForward()));
-    act->setShortcut(tr("Alt+F"));
-    act->setToolTip(tr("Bring Forward (Alt+F)"));
-    act = tb->addAction(QIcon(":/icon/images/send_backward.png"), tr("Send &Backward"), this, SLOT(sendBackward()));
-    act->setShortcut(tr("Alt+B"));
-    act->setToolTip(tr("Send Backward (Alt+B)"));
-    act = tb->addAction(QIcon(":/icon/images/group.png"), tr("&Group"), this, SLOT(group()));
-    act->setShortcut(tr("Alt+G"));
-    act->setToolTip(tr("Group (Alt+G)"));
-    act = tb->addAction(QIcon(":/icon/images/ungroup.png"), tr("&Ungroup"), this, SLOT(ungroup()));
-    act->setShortcut(tr("Alt+U"));
-    act->setToolTip(tr("Ungroup (Alt+U)"));
-    act = tb->addAction(QIcon(":/icon/images/rotate.png"), tr("&Rotate"), this, SLOT(rotate()));
-    act->setShortcut(tr("Ctrl+R"));
-    act->setToolTip(tr("Rotate (Ctrl+R)"));
+    _toolBar[ARRANGE] = addToolBar(tr("Arrange"));
+    _action[BRING_FORWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/bring_forward.png"), tr("Bring &Forward"), this, SLOT(bringForward()));
+    _action[BRING_FORWARD]->setShortcut(tr("Alt+F"));
+    _action[BRING_FORWARD]->setToolTip(tr("Bring Forward (Alt+F)"));
+    _action[SEND_BACKWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/send_backward.png"), tr("Send &Backward"), this, SLOT(sendBackward()));
+    _action[SEND_BACKWARD]->setShortcut(tr("Alt+B"));
+    _action[SEND_BACKWARD]->setToolTip(tr("Send Backward (Alt+B)"));
+    _action[GROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/group.png"), tr("&Group"), this, SLOT(group()));
+    _action[GROUP]->setShortcut(tr("Alt+G"));
+    _action[GROUP]->setToolTip(tr("Group (Alt+G)"));
+    _action[UNGROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/ungroup.png"), tr("&Ungroup"), this, SLOT(ungroup()));
+    _action[UNGROUP]->setShortcut(tr("Alt+U"));
+    _action[UNGROUP]->setToolTip(tr("Ungroup (Alt+U)"));
+    _action[ROTATE] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/rotate.png"), tr("&Rotate"), this, SLOT(rotate()));
+    _action[ROTATE]->setShortcut(tr("Ctrl+R"));
+    _action[ROTATE]->setToolTip(tr("Rotate (Ctrl+R)"));
 }
 
 void XMainWindow::save()
@@ -175,28 +184,28 @@ void XMainWindow::find()
 {
 }
 
-void XMainWindow::addRect()
+void XMainWindow::insertRect()
 {
     _scene->setMode(XScene::INS_RECT);
 }
 
-void XMainWindow::addLine()
+void XMainWindow::insertLine()
 {
 }
 
-void XMainWindow::addOval()
+void XMainWindow::insertOval()
 {
 }
 
-void XMainWindow::addText()
+void XMainWindow::insertText()
 {
 }
 
-void XMainWindow::addCurve()
+void XMainWindow::insertCurve()
 {
 }
 
-void XMainWindow::addPolygon()
+void XMainWindow::insertPolygon()
 {
 }
 
