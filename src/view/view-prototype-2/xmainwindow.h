@@ -20,63 +20,52 @@ public:
 private:
     XScene *_scene;
     XGraphicsView *_view;
-    enum {_INIT_VIEW_WIDTH = 500, _INIT_VIEW_HEIGHT = 400};
+    enum {
+        _INIT_XVIEW_WIDTH = 600, _INIT_XVIEW_HEIGHT = 400,
+        _INIT_XSCENE_WIDTH = 5000, _INIT_XSCENE_HEIGHT = 5000
+    };
 private:
     void initView();
     void initCentralWidget();
 
 private:
-    QToolBar *_fileToolBar;
-    QAction *_saveAction, *_openAction;
-
-    QToolBar *_clipboardToolBar;
-    QAction *_cutAction, *_copyAction, *_pasteAction;
-
-    QToolBar *_editToolBar;
-    QAction *_delAction, *_undoAction, *_redoAction, *_findAction;
-
-    QToolBar *_drawAddToolBar;
-    QAction *_addRectAction, *_addLineAction, *_addOvalAction;
-    QAction *_addTextAction, *_addCurveAction, *_addPolygonAction;
-
-    QToolBar *_drawArrangeToolBar;
-    QAction *_bringForwardAction, *_sendBackwardAction;
-    QAction *_groupAction, *_ungroupAction;
-    QAction *_rotateAction;
-
+    void initFileToolBar();
+    void initEditToolBar();
+    void initClipboardToolBar();
+    void initAddToolBar();
+    void initArrangeToolBar();
     ///TODO:
-    /// QToolBar *fontToolBar;
-    /// QToolBar *_shapeToolBar;
-private:
-    void initActions();
+    ///void initFontToolBar();
+    ///void initShapeToolBar();
+
     void initToolBars();
 
 private slots:
     // file actions
-    void _save();
-    void _open();
+    void save();
+    void open();
     // edit actions
-    void _del();
-    void _undo();
-    void _redo();
-    void _find();
+    void del();
+    void undo();
+    void redo();
+    void find();
     // draw: add actions
-    void _addRect();
-    void _addLine();
-    void _addOval();
-    void _addText();
-    void _addCurve();
-    void _addPolygon();
+    void addRect();
+    void addLine();
+    void addOval();
+    void addText();
+    void addCurve();
+    void addPolygon();
     // draw: arrange actions
-    void _bringForward();
-    void _sendBackward();
-    void _group();
-    void _ungroup();
-    void _rotate();
+    void bringForward();
+    void sendBackward();
+    void group();
+    void ungroup();
+    void rotate();
     // clipboard actions
-    void _cut();
-    void _copy();
-    void _paste();
+    void cut();
+    void copy();
+    void paste();
 };
 
 #endif // XMAINWINDOW_H

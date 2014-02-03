@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         xmainwindow.cpp \
     xscene.cpp \
-    xgraphicsview.cpp
+    xgraphicsview.cpp \
+    xrect.cpp
 
 HEADERS  += xmainwindow.h \
     xscene.h \
-    xgraphicsview.h
+    xgraphicsview.h \
+    xrect.h
 
 FORMS    +=
 
