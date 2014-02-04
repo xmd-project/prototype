@@ -11,11 +11,19 @@
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
     _scene(new XScene),
-    _view(new XGraphicsView)
+    _view(new XGraphicsView),
+    _toolBar(new QToolBar*[NUM_TOOLBARS]),
+    _action(new QAction*[NUM_ACTIONS])
+
 {
     initXScene();
     initCentralWidget();
     initToolBars();
+}
+XMainWindow::~XMainWindow()
+{
+    delete[] _action;
+    delete[] _toolBar;
 }
 
 void XMainWindow::graphicsItemInserted(QGraphicsItem *item)

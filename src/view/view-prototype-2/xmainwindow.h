@@ -17,6 +17,7 @@ class XMainWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit XMainWindow(QWidget *parent = 0);
+    ~XMainWindow();
 
 private slots:
     void graphicsItemInserted(QGraphicsItem *item);
@@ -38,7 +39,7 @@ private:
         FILE, EDIT, CLIPBOARD, INSERT, ARRANGE,
         NUM_TOOLBARS // NUM_TOOLBARS must be the last element! It indicates how many toolbars there are.
     };
-    QToolBar *_toolBar[NUM_TOOLBARS];
+    QToolBar **_toolBar;
 
     enum __Action { // DO NOT modify any of the following values!
         SAVE, OPEN,
@@ -48,7 +49,7 @@ private:
         CUT, COPY, PASTE,
         NUM_ACTIONS  // NUM_ACTIONS must be the last element! It indicates how many actions there are.
     };
-    QAction *_action[NUM_ACTIONS];
+    QAction **_action;
 private:
     void initFileToolBar();
     void initEditToolBar();
