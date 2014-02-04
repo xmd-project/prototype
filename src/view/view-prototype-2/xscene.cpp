@@ -9,6 +9,7 @@ XScene::XScene(QObject *parent) :
     _itemIndicator(0),
     _lastMousePressScenePos(0,0)
 {
+    setItemIndexMethod(NoIndex);
 }
 
 void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -55,17 +56,10 @@ void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void XScene::unselectAll()
-{
-    foreach (QGraphicsItem *item, selectedItems()) {
-        item->setSelected(false);
-    }
-}
-
 void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (_itemIndicator) {
-        unselectAll();
+        clearSelection();
         // replace an empty graphics item with the default size
         if (XRect::Type == _itemIndicator->type()) {
             XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
