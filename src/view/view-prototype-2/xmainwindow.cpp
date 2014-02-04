@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QAction>
+#include <QActionGroup>
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -71,7 +72,7 @@ void XMainWindow::initToolBars()
 
 void XMainWindow::initFileToolBar()
 {
-    _toolBar[FILE] = addToolBar(tr("File"));;
+    _toolBar[FILE] = addToolBar(tr("File"));
     _action[OPEN] = _toolBar[FILE]->addAction(QIcon(":/icon/images/open.png"), tr("&Open"), this, SLOT(open()));
     _action[OPEN]->setShortcut(tr("Ctrl+O"));
     _action[OPEN]->setToolTip(tr("Open (Ctrl+O)"));
@@ -139,6 +140,15 @@ void XMainWindow::initInsertToolBar()
     _action[INS_POLYGON]->setShortcut(tr("Alt+P"));
     _action[INS_POLYGON]->setToolTip(tr("Polygon (Alt+P)"));
     _action[INS_POLYGON]->setCheckable(true);
+    // The action group is exclusive by default,
+    // only one of the actions in the group is checked at any one time.
+    QActionGroup *ag = new QActionGroup(this);
+    ag->addAction(_action[INS_RECT]);
+    ag->addAction(_action[INS_LINE]);
+    ag->addAction(_action[INS_OVAL]);
+    ag->addAction(_action[INS_TEXT]);
+    ag->addAction(_action[INS_CURVE]);
+    ag->addAction(_action[INS_POLYGON]);
 }
 
 void XMainWindow::initArrangeToolBar()
@@ -193,22 +203,32 @@ void XMainWindow::insertRect()
 
 void XMainWindow::insertLine()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
+    _scene->setMode(XScene::INS_LINE);
 }
 
 void XMainWindow::insertOval()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
+    _scene->setMode(XScene::INS_OVAL);
 }
 
 void XMainWindow::insertText()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
+    _scene->setMode(XScene::INS_TEXT);
 }
 
 void XMainWindow::insertCurve()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
+    _scene->setMode(XScene::INS_CURVE);
 }
 
 void XMainWindow::insertPolygon()
 {
+    _view->setDragMode(QGraphicsView::NoDrag);
+    _scene->setMode(XScene::INS_POLYGON);
 }
 
 void XMainWindow::bringForward()

@@ -22,6 +22,16 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         //_itemIndicator->setBrush(...);
         addItem(_itemIndicator);
         break;
+    case INS_LINE:
+        break;
+    case INS_OVAL:
+        break;
+    case INS_TEXT:
+        break;
+    case INS_CURVE:
+        break;
+    case INS_POLYGON:
+        break;
     default:
         Q_ASSERT(_mode == NORMAL);
         QGraphicsScene::mousePressEvent(mouseEvent);
