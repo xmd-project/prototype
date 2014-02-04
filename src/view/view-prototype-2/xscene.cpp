@@ -53,36 +53,32 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (NORMAL == _mode) {
+    QPointF scenePos = mouseEvent->scenePos();
+    if (!_itemIndicator) {
+        if (SELECT == _mode) { // set the same selection mode as PPT
+            QPainterPath path;
+            path.addRect(QRectF(_lastMousePressScenePos, scenePos));
+            setSelectionArea(path, Qt::ContainsItemShape);
+        }
         QGraphicsScene::mouseMoveEvent(mouseEvent);
-    } else if (SELECT == _mode) {
-        QPainterPath path;
-        path.addRect(QRectF(_lastMousePressScenePos, mouseEvent->scenePos()));
-        setSelectionArea(path, Qt::ContainsItemShape); // set the selection mode
-        QGraphicsScene::mouseMoveEvent(mouseEvent);
-    } else if (MOVE == _mode) {
-        QGraphicsScene::mouseMoveEvent(mouseEvent);
-    } else if (INS_RECT == _mode && _itemIndicator) {
-        XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
-        Q_ASSERT(xrect);
-        xrect->setRect(QRectF(xrect->mapFromScene(_lastMousePressScenePos),
-                              xrect->mapFromScene(mouseEvent->scenePos())).normalized());
+    } else {
+        if (INS_RECT == _mode) {
+            XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
+            Q_ASSERT(xrect);
+            xrect->setRect(QRectF(xrect->mapFromScene(_lastMousePressScenePos),
+                                  xrect->mapFromScene(scenePos)).normalized());
+        }
     }
 }
 
 void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     Q_ASSERT(NORMAL != _mode);
-
-    if (SELECT == _mode || MOVE == _mode) {
+    if (SELECT == _mode || MOVE == _mode)
         _mode = NORMAL;
-    }
-
     if (_itemIndicator) {
         clearSelection();
-        // replace an empty graphics item with the default size
         if (INS_RECT == _mode) {
-            Q_ASSERT(XRect::Type == _itemIndicator->type());
             XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
             Q_ASSERT(xrect);
             if (xrect->rect().isEmpty())
@@ -96,6 +92,5 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         //delete _itemIndicator;
         _itemIndicator = 0;
     }
-
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
