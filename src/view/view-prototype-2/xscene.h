@@ -19,7 +19,7 @@ protected:
 
 public:
     enum Mode {
-        NORMAL,
+        NORMAL, SELECT, MOVE,
         INS_RECT, INS_LINE, INS_OVAL, INS_TEXT, INS_CURVE, INS_POLYGON
     };
 
