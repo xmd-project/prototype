@@ -1,8 +1,7 @@
 #include "xrect.h"
 #include "xpainterconstant.h"
 
-XRect::XRect(QGraphicsItem * parent):
-    QGraphicsRectItem(parent)
+void XRect::init()
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -10,6 +9,18 @@ XRect::XRect(QGraphicsItem * parent):
 
     setPen(XPainterConstant::pen(XPainterConstant::PEN_DEFAULT_BOUNDARY));
     setBrush(XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL));
+}
+
+XRect::XRect(QGraphicsItem * parent):
+    QGraphicsRectItem(parent)
+{
+    init();
+}
+
+XRect::XRect(const QRectF &rect, QGraphicsItem *parent):
+    QGraphicsRectItem(rect, parent)
+{
+    init();
 }
 
 void XRect::setRectDefault()

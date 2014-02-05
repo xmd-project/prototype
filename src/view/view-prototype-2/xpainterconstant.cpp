@@ -36,14 +36,18 @@ void XPainterConstant::initColor()
 {
     _color[COLOR_DEFAULT_FILL] = new QColor(137, 122, 186);
     _color[COLOR_DEFAULT_BOUNDARY] = new QColor(99, 88, 136);
+    _color[COLOR_SELECT_FILL] = new QColor(137, 122, 186, 127);
+    _color[COLOR_SELECT_BOUNDARY] = new QColor(161, 155, 184);
 }
 
 void XPainterConstant::initPen()
 {
-    _pen[PEN_DEFAULT_BOUNDARY] = new QPen(getColor(COLOR_DEFAULT_BOUNDARY), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    _pen[PEN_DEFAULT_BOUNDARY] = new QPen(colorPrivate(COLOR_DEFAULT_BOUNDARY), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    _pen[PEN_SELECT_BOUNDARY] = new QPen(colorPrivate(COLOR_SELECT_BOUNDARY), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 }
 
 void XPainterConstant::initBrush()
 {
-    _brush[BRUSH_DEFAULT_FILL] = new QBrush(getColor(COLOR_DEFAULT_FILL));
+    _brush[BRUSH_DEFAULT_FILL] = new QBrush(colorPrivate(COLOR_DEFAULT_FILL));
+    _brush[BRUSH_SELECT_FILL] = new QBrush(colorPrivate(COLOR_SELECT_FILL));
 }

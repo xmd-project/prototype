@@ -14,7 +14,6 @@ XMainWindow::XMainWindow(QWidget *parent) :
     _view(new XGraphicsView),
     _toolBar(new QToolBar*[NUM_TOOLBARS]),
     _action(new QAction*[NUM_ACTIONS])
-
 {
     initXScene();
     initCentralWidget();
@@ -97,7 +96,6 @@ void XMainWindow::initEditToolBar()
     _action[DEL] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/delete.png"), tr("&Delete"), this, SLOT(del()));
     _action[DEL]->setShortcut(tr("Del"));
     _action[DEL]->setToolTip(tr("Delete (Del)"));
-    _action[DEL]->setEnabled(false);
     _action[UNDO] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/undo.png"), tr("&Undo"), this, SLOT(undo()));
     _action[UNDO]->setShortcut(tr("Ctrl+Z"));
     _action[UNDO]->setToolTip(tr("Undo (Ctrl+Z)"));
@@ -208,6 +206,10 @@ void XMainWindow::open()
 
 void XMainWindow::del()
 {
+    foreach (QGraphicsItem *item, _scene->selectedItems()) {
+        _scene->removeItem(item);
+        delete item;
+    }
 }
 
 void XMainWindow::undo()

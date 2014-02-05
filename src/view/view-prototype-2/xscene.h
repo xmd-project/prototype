@@ -3,6 +3,8 @@
 
 #include <QGraphicsScene>
 
+class XRect;
+
 class XScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -26,6 +28,8 @@ public:
 public slots:
     void setMode(Mode mode = NORMAL) { _mode = mode; }
 
+private:
+    XRect *addXRect(const QPointF &pos, const QRectF &rect);
 private:
     Mode _mode;
     QGraphicsItem *_itemIndicator;
