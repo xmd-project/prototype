@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         xmainwindow.cpp \
     xscene.cpp \
     xgraphicsview.cpp \
-    xrect.cpp
+    xrect.cpp \
+    xpainterconstant.cpp
 
 HEADERS  += xmainwindow.h \
     xscene.h \
     xgraphicsview.h \
-    xrect.h
+    xrect.h \
+    xpainterconstant.h
 
 FORMS    +=
 
