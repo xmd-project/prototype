@@ -1,41 +1,52 @@
 #include "xscene.h"
 #include "xrect.h"
-#include "xpainterconstant.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 
 XScene::XScene(QObject *parent) :
     QGraphicsScene(parent),
     _mode(NORMAL),
-    _itemIndicator(0),
+    _itemIndicator(0), _topItem(0),
     _lastMousePressScenePos(0,0)
 {
     setItemIndexMethod(NoIndex); // improve the performance
 }
-namespace {
-inline XRect *createXRect(
+
+void XScene::removeItem(QGraphicsItem *item)
+{
+    QGraphicsScene::removeItem(item);
+    if (item == _topItem)
+        _topItem = items().empty() ? 0 : items().last();
+}
+
+void XScene::addItem(QGraphicsItem *item)
+{
+    QGraphicsScene::addItem(item);
+    Q_ASSERT(item == items().last()); // item is not always on the top
+    if (_topItem)
+        _topItem->stackBefore(item); // make sure new item is always on the top
+    _topItem = item;
+}
+
+XRect *XScene::createXRect(
         const QPointF &pos, const QRectF &rect,
-        const QPen &boundaryPen = XPainterConstant::pen(XPainterConstant::PEN_DEFAULT_BOUNDARY),
-        const QBrush &fillBrush = XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL)
-        )
+        const QPen &boundaryPen, const QBrush &fillBrush)
 {
     XRect *xrect = new XRect(rect);
     xrect->setPos(pos);
     xrect->setPen(boundaryPen);
     xrect->setBrush(fillBrush);
+    addItem(xrect);
     return xrect;
-}
 }
 
 void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton) {
-        mouseEvent->accept();
+        mouseEvent->accept(); // never propagate the event
         return;
     }
-    //if (mouseEvent->button() != Qt::LeftButton)
-        //return;
-    QPointF scenePos = mouseEvent->scenePos();
+    const QPointF scenePos = mouseEvent->scenePos();
     if (NORMAL == _mode)
         _mode = items(scenePos).isEmpty()? SELECT : MOVE;
     switch (_mode) {
@@ -53,7 +64,6 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 createXRect(scenePos, QRectF(),
                             XPainterConstant::pen(XPainterConstant::PEN_SELECT_BOUNDARY),
                             XPainterConstant::brush(XPainterConstant::BRUSH_SELECT_FILL));
-        addItem(_itemIndicator);
         break;
     case INS_LINE:
         break;
@@ -75,7 +85,7 @@ void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() == (Qt::LeftButton | Qt::RightButton))
         return; // avoid right-click by mistake
-    QPointF scenePos = mouseEvent->scenePos();
+    const QPointF scenePos = mouseEvent->scenePos();
     if (!_itemIndicator) {
         if (SELECT == _mode) { // set the same selection mode as PPT
             QPainterPath path;
@@ -98,7 +108,6 @@ XRect *XScene::addXRect(const QPointF &pos, const QRectF &rect)
     XRect *xrect = createXRect(pos, rect);
     if (xrect->rect().isEmpty())
         xrect->setRectDefault();
-    addItem(xrect);
     xrect->setSelected(true);
     return xrect;
 }
