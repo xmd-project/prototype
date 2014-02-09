@@ -1,14 +1,22 @@
 #include "xscene.h"
 #include "xrect.h"
 #include <QGraphicsSceneMouseEvent>
-#include <QDebug>
+
+const qreal XScene::_ZVALUE_INCREMENT = qreal(1.0);
 
 XScene::XScene(QObject *parent) :
-    QGraphicsScene(parent),
-    _mode(NORMAL),
-    _itemIndicator(0), _topItem(0),
-    _lastMousePressScenePos(0,0)
+    QGraphicsScene(parent)
 {
+    init();
+}
+
+void XScene::init()
+{
+    _mode = NORMAL;
+    _itemIndicator = 0;
+    _topItem = 0;
+    _lastMousePressScenePos = QPointF(0,0);
+
     setItemIndexMethod(NoIndex); // improve the performance
 }
 
@@ -22,9 +30,7 @@ void XScene::removeItem(QGraphicsItem *item)
 void XScene::addItem(QGraphicsItem *item)
 {
     QGraphicsScene::addItem(item);
-    Q_ASSERT(item == items().last()); // item is not always on the top
-    if (_topItem)
-        _topItem->stackBefore(item); // make sure new item is always on the top
+    item->setZValue(topZValue() + _ZVALUE_INCREMENT);
     _topItem = item;
 }
 
@@ -133,4 +139,9 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         _itemIndicator = 0;
     }
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
+}
+
+qreal XScene::topZValue() const
+{
+    return _topItem ? _topItem->zValue() : qreal(0.0);
 }

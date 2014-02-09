@@ -32,18 +32,23 @@ public slots:
     void setMode(Mode mode = NORMAL) { _mode = mode; }
 
 private:
+    void init();
     XRect *createXRect(
             const QPointF &pos, const QRectF &rect,
             const QPen &boundaryPen = XPainterConstant::pen(XPainterConstant::PEN_DEFAULT_BOUNDARY),
             const QBrush &fillBrush = XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL)
             );
     XRect *addXRect(const QPointF &pos, const QRectF &rect);
+    qreal topZValue() const;
 
 private:
     Mode _mode;
     QGraphicsItem *_itemIndicator;
     QGraphicsItem *_topItem;
     QPointF _lastMousePressScenePos;
+
+private:
+    static const qreal _ZVALUE_INCREMENT; ///! (new item's zValue) = (current top item's zValue) + _ZVALUE_INCREMENT
 };
 
 #endif // XSCENE_H
