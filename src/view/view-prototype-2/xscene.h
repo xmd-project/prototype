@@ -31,6 +31,10 @@ public:
 public slots:
     void setMode(Mode mode = NORMAL) { _mode = mode; }
 
+public:
+    void bringForwardSelectedItems();
+    void sendBackwardSelectedItems();
+
 private:
     void init();
     XRect *createXRect(

@@ -9,11 +9,7 @@
 #include <QActionGroup>
 
 XMainWindow::XMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    _scene(new XScene),
-    _view(new XGraphicsView),
-    _toolBar(new QToolBar*[NUM_TOOLBARS]),
-    _action(new QAction*[NUM_ACTIONS])
+    QMainWindow(parent)
 {
     initXScene();
     initCentralWidget();
@@ -28,7 +24,7 @@ XMainWindow::~XMainWindow()
 void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
 {
     _scene->setMode();
-    _view->setDragMode(QGraphicsView::RubberBandDrag);
+    _view->setDragMode(QGraphicsView::RubberBandDrag); // recover selection view mode
     switch (item->type()) {
     case XRect::Type: _action[INS_RECT]->setChecked(false); break;
     default:;
@@ -37,6 +33,7 @@ void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
 
 void XMainWindow::initXScene()
 {
+    _scene = new XScene;
     // setting scene rectangle is necessary for creating and locating a graphics item
     _scene->setSceneRect(QRectF(0, 0, _INIT_XSCENE_WIDTH, _INIT_XSCENE_HEIGHT));
     connect(_scene, SIGNAL(graphicsItemInserted(QGraphicsItem*)),
@@ -45,6 +42,7 @@ void XMainWindow::initXScene()
 
 void XMainWindow::initXView()
 {
+    _view = new XGraphicsView;
     _view->setScene(_scene);
     _view->setCacheMode(QGraphicsView::CacheBackground);
     _view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -70,6 +68,9 @@ void XMainWindow::initCentralWidget()
 
 void XMainWindow::initToolBars()
 {
+    _toolBar = new QToolBar*[NUM_TOOLBARS];
+    _action = new QAction*[NUM_ACTIONS];
+
     initFileToolBar();
     initEditToolBar();
     initClipboardToolBar();
@@ -177,11 +178,9 @@ void XMainWindow::initArrangeToolBar()
     _action[BRING_FORWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/bring_forward.png"), tr("Bring &Forward"), this, SLOT(bringForward()));
     _action[BRING_FORWARD]->setShortcut(tr("Alt+F"));
     _action[BRING_FORWARD]->setToolTip(tr("Bring Forward (Alt+F)"));
-    _action[BRING_FORWARD]->setEnabled(false);
     _action[SEND_BACKWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/send_backward.png"), tr("Send &Backward"), this, SLOT(sendBackward()));
     _action[SEND_BACKWARD]->setShortcut(tr("Alt+B"));
     _action[SEND_BACKWARD]->setToolTip(tr("Send Backward (Alt+B)"));
-    _action[SEND_BACKWARD]->setEnabled(false);
     _action[GROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/group.png"), tr("&Group"), this, SLOT(group()));
     _action[GROUP]->setShortcut(tr("Alt+G"));
     _action[GROUP]->setToolTip(tr("Group (Alt+G)"));
@@ -262,10 +261,12 @@ void XMainWindow::insertPolygon()
 
 void XMainWindow::bringForward()
 {
+    _scene->bringForwardSelectedItems();
 }
 
 void XMainWindow::sendBackward()
 {
+    _scene->sendBackwardSelectedItems();
 }
 
 void XMainWindow::group()
