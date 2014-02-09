@@ -14,7 +14,6 @@ void XScene::init()
 {
     _mode = NORMAL;
     _itemIndicator = 0;
-    _topItem = 0;
     _lastMousePressScenePos = QPointF(0,0);
 
     setItemIndexMethod(NoIndex); // improve the performance
@@ -23,15 +22,14 @@ void XScene::init()
 void XScene::removeItem(QGraphicsItem *item)
 {
     QGraphicsScene::removeItem(item);
-    if (item == _topItem)
-        _topItem = items().empty() ? 0 : items().last();
+    _itemsSortedByZValue.removeOne(item);
 }
 
 void XScene::addItem(QGraphicsItem *item)
 {
-    QGraphicsScene::addItem(item);
     item->setZValue(topZValue() + _ZVALUE_INCREMENT);
-    _topItem = item;
+    QGraphicsScene::addItem(item);
+    _itemsSortedByZValue << item;
 }
 
 XRect *XScene::createXRect(
@@ -129,7 +127,8 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         case INS_RECT:
             Q_ASSERT(qgraphicsitem_cast<XRect *>(_itemIndicator));
             emit graphicsItemInserted(
-                        addXRect(_itemIndicator->pos(), qgraphicsitem_cast<XRect *>(_itemIndicator)->rect()));
+                        addXRect(_itemIndicator->pos(),
+                                 qgraphicsitem_cast<XRect *>(_itemIndicator)->rect()));
             break;
         default:
             Q_ASSERT(!"Unknown graphics item!");
@@ -141,7 +140,17 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
+QGraphicsItem *XScene::topItem()
+{
+    return _itemsSortedByZValue.isEmpty() ? 0 : _itemsSortedByZValue.last();
+}
+
+const QGraphicsItem *XScene::topItem() const
+{
+    return _itemsSortedByZValue.isEmpty() ? 0 : _itemsSortedByZValue.last();
+}
+
 qreal XScene::topZValue() const
 {
-    return _topItem ? _topItem->zValue() : qreal(0.0);
+    return topItem() ? topItem()->zValue() : qreal(0.0);
 }

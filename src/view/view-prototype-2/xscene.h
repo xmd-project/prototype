@@ -39,13 +39,15 @@ private:
             const QBrush &fillBrush = XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL)
             );
     XRect *addXRect(const QPointF &pos, const QRectF &rect);
+    QGraphicsItem *topItem();
+    const QGraphicsItem *topItem() const;
     qreal topZValue() const;
 
 private:
     Mode _mode;
     QGraphicsItem *_itemIndicator;
-    QGraphicsItem *_topItem;
     QPointF _lastMousePressScenePos;
+    QList<QGraphicsItem *> _itemsSortedByZValue; ///! keep track of all items in this scene in terms of zValue
 
 private:
     static const qreal _ZVALUE_INCREMENT; ///! (new item's zValue) = (current top item's zValue) + _ZVALUE_INCREMENT
