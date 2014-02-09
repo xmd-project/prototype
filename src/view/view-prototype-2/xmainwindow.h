@@ -5,6 +5,7 @@
 
 class XScene;
 class XGraphicsView;
+class ZoomWidget;
 
 QT_BEGIN_NAMESPACE
 class QToolBar;
@@ -61,6 +62,11 @@ private:
     ///void initShapeToolBar();
 
     void initToolBars();
+
+private:
+    ZoomWidget *_zoomWidget;
+private:
+    void initStatusBar();
 
 private slots:
     // file actions

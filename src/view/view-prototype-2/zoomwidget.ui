@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ZoomWidget</class>
+ <widget class="QWidget" name="ZoomWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>345</width>
+    <height>42</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QComboBox" name="zoomComboBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>400%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>200%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>100%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>66%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>50%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>33%</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10%</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="zoomOutButton">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="view_prototype.qrc">
+       <normaloff>:/icon/images/zoom_out.png</normaloff>:/icon/images/zoom_out.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSlider" name="ZoomHorizontalSlider">
+     <property name="maximum">
+      <number>400</number>
+     </property>
+     <property name="sliderPosition">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TicksBelow</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="zoomInButton">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="view_prototype.qrc">
+       <normaloff>:/icon/images/zoom_in.png</normaloff>:/icon/images/zoom_in.png</iconset>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="view_prototype.qrc"/>
+ </resources>
+ <connections/>
+</ui>

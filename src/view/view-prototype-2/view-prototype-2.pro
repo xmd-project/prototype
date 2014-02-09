@@ -17,15 +17,18 @@ SOURCES += main.cpp\
     xscene.cpp \
     xgraphicsview.cpp \
     xrect.cpp \
-    xpainterconstant.cpp
+    xpainterconstant.cpp \
+    zoomwidget.cpp
 
 HEADERS  += xmainwindow.h \
     xscene.h \
     xgraphicsview.h \
     xrect.h \
-    xpainterconstant.h
+    xpainterconstant.h \
+    zoomwidget.h
 
-FORMS    +=
+FORMS    += \
+    zoomwidget.ui
 
 RESOURCES += \
     view_prototype.qrc

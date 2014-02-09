@@ -2,11 +2,13 @@
 #include "xscene.h"
 #include "xgraphicsview.h"
 #include "xrect.h"
+#include "zoomwidget.h"
 #include <QGraphicsItem>
 #include <QHBoxLayout>
 #include <QToolBar>
 #include <QAction>
 #include <QActionGroup>
+#include <QStatusBar>
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -14,6 +16,7 @@ XMainWindow::XMainWindow(QWidget *parent) :
     initXScene();
     initCentralWidget();
     initToolBars();
+    initStatusBar();
 }
 XMainWindow::~XMainWindow()
 {
@@ -193,6 +196,12 @@ void XMainWindow::initArrangeToolBar()
     _action[ROTATE]->setShortcut(tr("Ctrl+R"));
     _action[ROTATE]->setToolTip(tr("Rotate (Ctrl+R)"));
     _action[ROTATE]->setEnabled(false);
+}
+
+void XMainWindow::initStatusBar()
+{
+    _zoomWidget = new ZoomWidget;
+    statusBar()->addPermanentWidget(_zoomWidget);
 }
 
 void XMainWindow::save()

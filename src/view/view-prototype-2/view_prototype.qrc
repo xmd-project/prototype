@@ -27,5 +27,7 @@
         <file>images/ungroup.png</file>
         <file>images/text.png</file>
         <file>images/app.png</file>
+        <file>images/zoom_in.png</file>
+        <file>images/zoom_out.png</file>
     </qresource>
 </RCC>
