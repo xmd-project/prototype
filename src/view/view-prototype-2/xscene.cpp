@@ -42,7 +42,7 @@ XRect *XScene::createXRect(
 
 void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() != Qt::LeftButton) {
+    if (mouseEvent->button() == Qt::RightButton) {
         mouseEvent->accept(); // never propagate the event
         return;
     }
@@ -83,8 +83,6 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() == (Qt::LeftButton | Qt::RightButton))
-        return; // avoid right-click by mistake
     const QPointF scenePos = mouseEvent->scenePos();
     if (!_itemIndicator) {
         if (SELECT == _mode) { // set the same selection mode as PPT
