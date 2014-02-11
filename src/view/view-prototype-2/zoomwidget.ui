@@ -21,54 +21,19 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QComboBox" name="zoomComboBox">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <widget class="QSpinBox" name="zoomSpinBox">
+     <property name="suffix">
+      <string>%</string>
      </property>
-     <property name="editable">
-      <bool>false</bool>
+     <property name="minimum">
+      <number>10</number>
      </property>
-     <property name="currentIndex">
-      <number>2</number>
+     <property name="maximum">
+      <number>400</number>
      </property>
-     <item>
-      <property name="text">
-       <string>400%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>200%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>100%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>66%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>50%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>33%</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>10%</string>
-      </property>
-     </item>
+     <property name="value">
+      <number>100</number>
+     </property>
     </widget>
    </item>
    <item>
@@ -83,18 +48,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QSlider" name="ZoomHorizontalSlider">
+    <widget class="QSlider" name="zoomHorizontalSlider">
      <property name="maximum">
       <number>400</number>
      </property>
      <property name="sliderPosition">
       <number>100</number>
      </property>
+     <property name="tracking">
+      <bool>false</bool>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="tickPosition">
-      <enum>QSlider::TicksBelow</enum>
+      <enum>QSlider::NoTicks</enum>
      </property>
     </widget>
    </item>
