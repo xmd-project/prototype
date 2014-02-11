@@ -49,20 +49,29 @@
    </item>
    <item>
     <widget class="QSlider" name="zoomHorizontalSlider">
+     <property name="minimum">
+      <number>0</number>
+     </property>
      <property name="maximum">
-      <number>400</number>
+      <number>200</number>
+     </property>
+     <property name="value">
+      <number>100</number>
      </property>
      <property name="sliderPosition">
       <number>100</number>
      </property>
      <property name="tracking">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="tickPosition">
-      <enum>QSlider::NoTicks</enum>
+      <enum>QSlider::TicksAbove</enum>
+     </property>
+     <property name="tickInterval">
+      <number>99</number>
      </property>
     </widget>
    </item>

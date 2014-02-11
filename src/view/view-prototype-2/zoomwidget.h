@@ -15,8 +15,20 @@ public:
     explicit ZoomWidget(QWidget *parent = 0);
     ~ZoomWidget();
 
+private slots:
+    void setSliderValue(int);
+    void setSpinBoxValue(int);
+
 private:
-    Ui::ZoomWidget *ui;
+    Ui::ZoomWidget *_ui;
+
+private:
+    enum {
+        MIN_SLIDER_VALUE = 0, MAX_SLIDER_VALUE = 200, MID_SLIDER_VALUE = 100,
+        MIN_SPINBOX_VALUE = 10, MAX_SPINBOX_VALUE = 400, INIT_SPINBOX_VALUE = 100
+    };
+    static int spinBoxValueToSliderValue(int value);
+    static int sliderValueToSpinBoxValue(int value);
 };
 
 #endif // ZOOMWIDGET_H
