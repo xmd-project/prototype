@@ -38,7 +38,8 @@ int ZoomWidget::spinBoxValueToSliderValue(int value)
         a = double(MAX_SLIDER_VALUE - MID_SLIDER_VALUE) / double(MAX_SPINBOX_VALUE - INIT_SPINBOX_VALUE);
         b = MAX_SLIDER_VALUE - a * MAX_SPINBOX_VALUE;
     }
-    return int(a * value + b + 0.5);
+    double spinBoxValue = a * value + b;
+    return spinBoxValue > 0 ? int(spinBoxValue + 0.5) : int(spinBoxValue - 0.5);
 }
 
 int ZoomWidget::sliderValueToSpinBoxValue(int value)
@@ -55,7 +56,8 @@ int ZoomWidget::sliderValueToSpinBoxValue(int value)
         a = double(MAX_SPINBOX_VALUE - INIT_SPINBOX_VALUE) / double(MAX_SLIDER_VALUE - MID_SLIDER_VALUE);
         b = MAX_SPINBOX_VALUE - a * MAX_SLIDER_VALUE;
     }
-    return int(a * value + b + 0.5);
+    double sliderValue = a * value + b;
+    return sliderValue > 0 ? int(sliderValue + 0.5) : int(sliderValue - 0.5);
 }
 
 void ZoomWidget::setSliderValue(int value)
