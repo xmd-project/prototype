@@ -201,6 +201,7 @@ void XMainWindow::initArrangeToolBar()
 void XMainWindow::initStatusBar()
 {
     _zoomWidget = new ZoomWidget;
+    connect(_zoomWidget, SIGNAL(scaleChanged(int)), this, SLOT(setZoomScale(int)));
     statusBar()->addPermanentWidget(_zoomWidget);
 }
 
@@ -300,4 +301,13 @@ void XMainWindow::copy()
 
 void XMainWindow::paste()
 {
+}
+
+void XMainWindow::setZoomScale(int newScalePercentage)
+{
+    qreal newScale = static_cast<qreal> (newScalePercentage) / 100.0;
+    QMatrix oldMatrix = _view->matrix();
+    _view->resetMatrix();
+    _view->translate(oldMatrix.dx(), oldMatrix.dy());
+    _view->scale(newScale, newScale);
 }

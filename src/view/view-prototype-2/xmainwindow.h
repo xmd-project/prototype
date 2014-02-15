@@ -94,6 +94,8 @@ private slots:
     void cut();
     void copy();
     void paste();
+    // zoom
+    void setZoomScale(int newScalePercentage);
 };
 
 #endif // XMAINWINDOW_H
