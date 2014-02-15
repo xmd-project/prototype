@@ -3,7 +3,8 @@
 
 ZoomWidget::ZoomWidget(QWidget *parent) :
     QWidget(parent),
-    _ui(new Ui::ZoomWidget)
+    _ui(new Ui::ZoomWidget),
+    _zoomPercentage(100)
 {
     _ui->setupUi(this);
 
@@ -15,6 +16,8 @@ ZoomWidget::ZoomWidget(QWidget *parent) :
     _ui->zoomSpinBox->setMinimum(MIN_SPINBOX_VALUE);
     _ui->zoomSpinBox->setMaximum(MAX_SPINBOX_VALUE);
     _ui->zoomSpinBox->setValue(INIT_SPINBOX_VALUE);
+
+    connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setZoomPercentage(int)));
 
     connect(_ui->zoomHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
     connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
@@ -90,4 +93,10 @@ void ZoomWidget::sliderPageDown()
 {
     Q_ASSERT(_ui->zoomHorizontalSlider);
     _ui->zoomHorizontalSlider->setValue(_ui->zoomHorizontalSlider->value() - SLIDER_PAGE_STEP);
+}
+
+void ZoomWidget::setZoomPercentage(int value)
+{
+    Q_ASSERT(_ui->zoomSpinBox);
+    _zoomPercentage = value;
 }
