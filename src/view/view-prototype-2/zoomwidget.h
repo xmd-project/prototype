@@ -18,13 +18,15 @@ public:
 private slots:
     void setSliderValue(int);
     void setSpinBoxValue(int);
+    void sliderPageUp();
+    void sliderPageDown();
 
 private:
     Ui::ZoomWidget *_ui;
 
 private:
     enum {
-        MIN_SLIDER_VALUE = 0, MAX_SLIDER_VALUE = 200, MID_SLIDER_VALUE = 100,
+        MIN_SLIDER_VALUE = 0, MAX_SLIDER_VALUE = 200, MID_SLIDER_VALUE = 100, SLIDER_PAGE_STEP=10,
         MIN_SPINBOX_VALUE = 10, MAX_SPINBOX_VALUE = 400, INIT_SPINBOX_VALUE = 100
     };
     static int spinBoxValueToSliderValue(int value);

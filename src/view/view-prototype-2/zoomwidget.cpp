@@ -10,6 +10,7 @@ ZoomWidget::ZoomWidget(QWidget *parent) :
     _ui->zoomHorizontalSlider->setMinimum(MIN_SLIDER_VALUE);
     _ui->zoomHorizontalSlider->setMaximum(MAX_SLIDER_VALUE);
     _ui->zoomHorizontalSlider->setValue(MID_SLIDER_VALUE);
+    _ui->zoomHorizontalSlider->setPageStep(SLIDER_PAGE_STEP);
 
     _ui->zoomSpinBox->setMinimum(MIN_SPINBOX_VALUE);
     _ui->zoomSpinBox->setMaximum(MAX_SPINBOX_VALUE);
@@ -17,6 +18,9 @@ ZoomWidget::ZoomWidget(QWidget *parent) :
 
     connect(_ui->zoomHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
     connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
+
+    connect(_ui->zoomInButton, SIGNAL(clicked()), this, SLOT(sliderPageUp()));
+    connect(_ui->zoomOutButton, SIGNAL(clicked()), this, SLOT(sliderPageDown()));
 }
 
 ZoomWidget::~ZoomWidget()
@@ -74,4 +78,16 @@ void ZoomWidget::setSpinBoxValue(int value)
     disconnect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
     _ui->zoomSpinBox->setValue(sliderValueToSpinBoxValue(value));
     connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
+}
+
+void ZoomWidget::sliderPageUp()
+{
+    Q_ASSERT(_ui->zoomHorizontalSlider);
+    _ui->zoomHorizontalSlider->setValue(_ui->zoomHorizontalSlider->value() + SLIDER_PAGE_STEP);
+}
+
+void ZoomWidget::sliderPageDown()
+{
+    Q_ASSERT(_ui->zoomHorizontalSlider);
+    _ui->zoomHorizontalSlider->setValue(_ui->zoomHorizontalSlider->value() - SLIDER_PAGE_STEP);
 }
