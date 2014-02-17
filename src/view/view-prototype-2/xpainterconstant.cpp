@@ -2,8 +2,6 @@
 #include <QPen>
 #include <QBrush>
 
-const XPainterConstant XPainterConstant::_singleton;
-
 XPainterConstant::XPainterConstant() :
     _color(new const QColor* [NUM_COLORS]),
     _pen(new const QPen* [NUM_PENS]),
@@ -30,6 +28,12 @@ XPainterConstant::~XPainterConstant()
         delete _color;
     delete[] _color;
     _color = 0;
+}
+
+const XPainterConstant &XPainterConstant::singleton()
+{
+    static const XPainterConstant singletonObj;
+    return singletonObj;
 }
 
 void XPainterConstant::initColor()

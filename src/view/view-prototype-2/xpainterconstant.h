@@ -26,10 +26,12 @@ public:
         NUM_BRUSHES // NUM_BRUSHES must be the last element!
     };
 
+private:
+    static const XPainterConstant &singleton();
 public:
-    static const QColor &color(const ColorEnum n) { return _singleton.colorPrivate(n); }
-    static const QPen &pen(const PenEnum n) { return _singleton.penPrivate(n); }
-    static const QBrush &brush(const BrushEnum n) {return _singleton.brushPrivate(n); }
+    static const QColor &color(const ColorEnum n) { return singleton().colorPrivate(n); }
+    static const QPen &pen(const PenEnum n) { return singleton().penPrivate(n); }
+    static const QBrush &brush(const BrushEnum n) {return singleton().brushPrivate(n); }
 
 private:
     const QColor **_color;
@@ -43,9 +45,6 @@ private:
     const QColor &colorPrivate(const ColorEnum n) const { return *_color[n]; }
     const QPen &penPrivate(const PenEnum n) const { return *_pen[n]; }
     const QBrush &brushPrivate(const BrushEnum n) const { return *_brush[n]; }
-
-private:
-    static const XPainterConstant _singleton;
 };
 
 #endif // XPAINTERCONSTANT_H
