@@ -239,12 +239,16 @@ void XScene::destroyItemGroup(QGraphicsItemGroup *group)
 
 void XScene::group()
 {
-    const QList<QGraphicsItem *>items = selectedItems(); // copy
+    QList<QGraphicsItem *>itemsToBeAdded;
+    foreach (QGraphicsItem *item, selectedItems())
+        if (!item->parentItem()) // an item is never be added to more than 1 group
+            itemsToBeAdded << item;
     clearSelection(); // and unselected all items before grouping them
-    QGraphicsItemGroup *group = createItemGroup(items);
+    if (itemsToBeAdded.isEmpty())
+        return; // never create an empty group
+    QGraphicsItemGroup *group = createItemGroup(itemsToBeAdded);
     group->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     group->setSelected(true); // select the new group
-    //group->setFiltersChildEvents(false);
 }
 
 void XScene::ungroup()
