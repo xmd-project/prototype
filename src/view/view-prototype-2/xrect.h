@@ -1,6 +1,7 @@
 #ifndef XRECT_H
 #define XRECT_H
 
+#include "xmd.h"
 #include <QGraphicsRectItem>
 
 class XRect : public QGraphicsRectItem
@@ -9,7 +10,7 @@ public:
     XRect(QGraphicsItem * parent = 0);
     XRect(const QRectF &rect, QGraphicsItem * parent = 0);
 
-    enum { Type = UserType + 1 };
+    enum { Type = UserType + XRECT };
     int type() const { return Type; }
     void setRectDefault();
 

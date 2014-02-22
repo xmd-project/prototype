@@ -27,7 +27,8 @@ HEADERS  += xmainwindow.h \
     xrect.h \
     xpainterconstant.h \
     zoomwidget.h \
-    xgroup.h
+    xgroup.h \
+    xmd.h
 
 FORMS    += \
     zoomwidget.ui
