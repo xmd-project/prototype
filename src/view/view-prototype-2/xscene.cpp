@@ -1,5 +1,6 @@
 #include "xscene.h"
 #include "xrect.h"
+#include "xgroup.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QtAlgorithms>
 
@@ -217,4 +218,46 @@ void XScene::sendBackwardSelectedItems()
             _itemsSortedByZValue.swap(itemIdx, prevItemIdx);
         }
     }
+}
+
+QGraphicsItemGroup *XScene::createItemGroup(const QList<QGraphicsItem *> &items)
+{
+    QGraphicsItemGroup *group = new XGroup;
+    foreach (QGraphicsItem *item, items)
+        group->addToGroup(item);
+    group->setZValue(topZValue() + _ZVALUE_INCREMENT);
+    _itemsSortedByZValue << group;
+    addItem(group);
+    return group;
+}
+
+void XScene::destroyItemGroup(QGraphicsItemGroup *group)
+{
+    QGraphicsScene::destroyItemGroup(group);
+    _itemsSortedByZValue.removeOne(group);
+}
+
+void XScene::group()
+{
+    const QList<QGraphicsItem *>items = selectedItems(); // copy
+    clearSelection(); // and unselected all items before grouping them
+    QGraphicsItemGroup *group = createItemGroup(items);
+    group->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+    group->setSelected(true); // select the new group
+    //group->setFiltersChildEvents(false);
+}
+
+void XScene::ungroup()
+{
+    QList<QGraphicsItem *>subitems;
+    foreach (QGraphicsItem *item, selectedItems()) {
+        QGraphicsItemGroup *group = qgraphicsitem_cast<XGroup *>(item);
+        if (group) {
+            subitems << group->childItems();
+            destroyItemGroup(group);
+        }
+    }
+    // select all subitems after dismantling all selected groups
+    foreach (QGraphicsItem *subitem, subitems)
+        subitem->setSelected(true);
 }

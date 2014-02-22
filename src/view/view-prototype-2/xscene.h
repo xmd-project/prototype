@@ -13,6 +13,8 @@ public:
     explicit XScene(QObject *parent = 0);
     void addItem(QGraphicsItem *item);
     void removeItem(QGraphicsItem *item);
+    QGraphicsItemGroup *createItemGroup(const QList<QGraphicsItem *> & items);
+    void destroyItemGroup(QGraphicsItemGroup * group);
 
 signals:
     void graphicsItemInserted(QGraphicsItem *item);
@@ -34,6 +36,8 @@ public slots:
 public:
     void bringForwardSelectedItems();
     void sendBackwardSelectedItems();
+    void group();
+    void ungroup();
 
 private:
     void init();

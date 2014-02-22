@@ -187,11 +187,9 @@ void XMainWindow::initArrangeToolBar()
     _action[GROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/group.png"), tr("&Group"), this, SLOT(group()));
     _action[GROUP]->setShortcut(tr("Alt+G"));
     _action[GROUP]->setToolTip(tr("Group (Alt+G)"));
-    _action[GROUP]->setEnabled(false);
     _action[UNGROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/ungroup.png"), tr("&Ungroup"), this, SLOT(ungroup()));
     _action[UNGROUP]->setShortcut(tr("Alt+U"));
     _action[UNGROUP]->setToolTip(tr("Ungroup (Alt+U)"));
-    _action[UNGROUP]->setEnabled(false);
     _action[ROTATE] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/rotate.png"), tr("&Rotate"), this, SLOT(rotate()));
     _action[ROTATE]->setShortcut(tr("Ctrl+R"));
     _action[ROTATE]->setToolTip(tr("Rotate (Ctrl+R)"));
@@ -281,10 +279,12 @@ void XMainWindow::sendBackward()
 
 void XMainWindow::group()
 {
+    _scene->group();
 }
 
 void XMainWindow::ungroup()
 {
+    _scene->ungroup();
 }
 
 void XMainWindow::rotate()

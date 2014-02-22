@@ -18,14 +18,16 @@ SOURCES += main.cpp\
     xgraphicsview.cpp \
     xrect.cpp \
     xpainterconstant.cpp \
-    zoomwidget.cpp
+    zoomwidget.cpp \
+    xgroup.cpp
 
 HEADERS  += xmainwindow.h \
     xscene.h \
     xgraphicsview.h \
     xrect.h \
     xpainterconstant.h \
-    zoomwidget.h
+    zoomwidget.h \
+    xgroup.h
 
 FORMS    += \
     zoomwidget.ui
