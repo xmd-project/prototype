@@ -15,17 +15,17 @@ XPainterConstant::XPainterConstant() :
 XPainterConstant::~XPainterConstant()
 {
     for (int i = 0; i < NUM_BRUSHES; ++i)
-        delete _brush;
+        delete _brush[i];
     delete[] _brush;
     _brush = 0;
 
     for (int i = 0; i < NUM_PENS; ++i)
-        delete _pen;
+        delete _pen[i];
     delete[] _pen;
     _pen = 0;
 
     for (int i = 0; i < NUM_COLORS; ++i)
-        delete _color;
+        delete _color[i];
     delete[] _color;
     _color = 0;
 }
