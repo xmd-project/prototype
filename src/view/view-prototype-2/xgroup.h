@@ -9,7 +9,7 @@ class XGroup : public QGraphicsItemGroup
 public:
     XGroup(QGraphicsItem *parent=0);
 
-    enum { Type = UserType + XGROUP };
+    enum { Type = UserType + Xmd::XGROUP };
     int type() const { return Type; }
 };
 

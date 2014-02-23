@@ -10,7 +10,7 @@ public:
     XRect(QGraphicsItem * parent = 0);
     XRect(const QRectF &rect, QGraphicsItem * parent = 0);
 
-    enum { Type = UserType + XRECT };
+    enum { Type = UserType + Xmd::XRECT };
     int type() const { return Type; }
     void setRectDefault();
 
