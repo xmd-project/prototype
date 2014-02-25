@@ -105,7 +105,7 @@ private slots:
 
     // Cut, copy and paste
 private:
-    enum { PASTE_OFFSET_ORIG = 0, PASTE_OFFSET_INC = 5 };
+    enum { PASTE_OFFSET_ORIG = 0, PASTE_OFFSET_INC = 15 };
     int _pasteOffset;
 private:
     void setPasteOffset(int origOffset = PASTE_OFFSET_ORIG) { _pasteOffset = origOffset; }
@@ -122,6 +122,8 @@ private:
     };
 private:
     static const QString &mimeType(int typeId = XTYPE_MIME);
+private slots:
+    void activatePasteAction();
 
     // Shortcuts
 private:

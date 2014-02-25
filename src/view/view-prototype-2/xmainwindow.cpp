@@ -155,6 +155,16 @@ void XMainWindow::initClipboardToolBar()
     _action[PASTE] = _toolBar[CLIPBOARD]->addAction(QIcon(":/icon/images/paste.png"), tr("&Paste"), this, SLOT(paste()));
     _action[PASTE]->setShortcut(tr("Ctrl+V"));
     _action[PASTE]->setToolTip(tr("Paste (Ctrl+V)"));
+    // activate paste action if and only if the clipboard has acceptable data
+    _action[PASTE]->setEnabled(false);
+    connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(activatePasteAction()));
+}
+
+void XMainWindow::activatePasteAction()
+{
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (mimeData && mimeData->hasFormat(mimeType()))
+        _action[PASTE]->setEnabled(true);
 }
 
 void XMainWindow::initInsertToolBar()
