@@ -29,6 +29,11 @@ ZoomWidget::~ZoomWidget()
     delete _ui;
 }
 
+inline int nearByInt(const qreal value)
+{
+    return value > 0 ? static_cast<int>(value + 0.5) : static_cast<int>(value - 0.5);
+}
+
 int ZoomWidget::spinBoxValueToSliderValue(int value)
 {
     /// Linear mappings:
@@ -44,7 +49,7 @@ int ZoomWidget::spinBoxValueToSliderValue(int value)
         b = MAX_SLIDER_VALUE - a * MAX_SPINBOX_VALUE;
     }
     double spinBoxValue = a * value + b;
-    return spinBoxValue > 0 ? int(spinBoxValue + 0.5) : int(spinBoxValue - 0.5);
+    return nearByInt(spinBoxValue);
 }
 
 int ZoomWidget::sliderValueToSpinBoxValue(int value)
@@ -62,7 +67,7 @@ int ZoomWidget::sliderValueToSpinBoxValue(int value)
         b = MAX_SPINBOX_VALUE - a * MAX_SLIDER_VALUE;
     }
     double sliderValue = a * value + b;
-    return sliderValue > 0 ? int(sliderValue + 0.5) : int(sliderValue - 0.5);
+    return nearByInt(sliderValue);
 }
 
 void ZoomWidget::setSliderValue(int value)
