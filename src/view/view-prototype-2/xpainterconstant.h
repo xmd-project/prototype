@@ -31,7 +31,7 @@ private:
 public:
     static const QColor &color(const ColorEnum n) { return singleton().colorPrivate(n); }
     static const QPen &pen(const PenEnum n) { return singleton().penPrivate(n); }
-    static const QBrush &brush(const BrushEnum n) {return singleton().brushPrivate(n); }
+    static const QBrush &brush(const BrushEnum n) { return singleton().brushPrivate(n); }
 
 private:
     const QColor **_color;
