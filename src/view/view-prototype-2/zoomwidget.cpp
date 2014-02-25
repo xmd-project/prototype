@@ -4,7 +4,7 @@
 ZoomWidget::ZoomWidget(QWidget *parent) :
     QWidget(parent),
     _ui(new Ui::ZoomWidget),
-    _zoomScale(100)
+    _zoomScale(INIT_SPINBOX_VALUE)
 {
     _ui->setupUi(this);
 
