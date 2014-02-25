@@ -11,6 +11,7 @@ QT_BEGIN_NAMESPACE
 class QToolBar;
 class QAction;
 class QGraphicsItem;
+class QDataStream;
 QT_END_NAMESPACE
 
 class XMainWindow : public QMainWindow
@@ -22,13 +23,14 @@ public:
 
 private slots:
     void graphicsItemInserted(QGraphicsItem *item);
+    void XSceneSelectionChanged();
 
 private:
     XScene *_scene;
     XGraphicsView *_view;
     enum {
-        _INIT_XVIEW_WIDTH = 600, _INIT_XVIEW_HEIGHT = 400,
-        _INIT_XSCENE_WIDTH = 5000, _INIT_XSCENE_HEIGHT = 5000
+        INIT_XVIEW_WIDTH = 600, INIT_XVIEW_HEIGHT = 400,
+        INIT_XSCENE_WIDTH = 5000, INIT_XSCENE_HEIGHT = 5000
     };
 private:
     void initXScene();
@@ -96,6 +98,27 @@ private slots:
     void paste();
     // zoom
     void setZoomScale(int newScalePercentage);
+
+    /// Cut, copy and paste
+private:
+    enum { PASTE_OFFSET_ORIG = 0, PASTE_OFFSET_INC = 5 };
+    int _pasteOffset;
+private:
+    void setPasteOffset(int origOffset = PASTE_OFFSET_ORIG) { _pasteOffset = origOffset; }
+    int pasteOffset() const { return _pasteOffset; }
+    int incPasteOffset(int offsetInc = PASTE_OFFSET_INC) { return _pasteOffset += offsetInc; }
+    void selectItems(const QList<QGraphicsItem*> &items);
+    void readItems(QDataStream &in, int offset, bool select);
+    void writeItems(QDataStream &out, const QList<QGraphicsItem*> &items);
+    void copyItems(const QList<QGraphicsItem*> &items);
+
+private:
+    enum {
+        XTYPE_MIME = 0,
+        NUM_MIME_TYPES  // THIS MUST BE THE LAST ENUM!
+    };
+private:
+    static const QString &mimeType(int typeId = XTYPE_MIME);
 };
 
 #endif // XMAINWINDOW_H

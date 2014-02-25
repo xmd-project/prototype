@@ -34,6 +34,9 @@ public slots:
     void setMode(Mode mode = NORMAL) { _mode = mode; }
 
 public:
+    static void sortByZValue(QList<QGraphicsItem *> &items);
+
+public:
     void bringForwardSelectedItems();
     void sendBackwardSelectedItems();
     void group();

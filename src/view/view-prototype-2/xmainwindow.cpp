@@ -9,9 +9,13 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QStatusBar>
+#include <QMimeData>
+#include <QApplication>
+#include <QClipboard>
 
 XMainWindow::XMainWindow(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    _pasteOffset(PASTE_OFFSET_ORIG)
 {
     initXScene();
     initCentralWidget();
@@ -34,13 +38,32 @@ void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
     }
 }
 
+void XMainWindow::XSceneSelectionChanged()
+{
+    Q_ASSERT(_scene);
+    if (_scene->selectedItems().empty()) {
+        // deactivate delete action
+        _action[DEL]->setEnabled(false);
+        // deactivate cut and copy actions
+        _action[CUT]->setEnabled(false);
+        _action[COPY]->setEnabled(false);
+    } else {
+        // activate delete action
+        _action[DEL]->setEnabled(true);
+        // activate cut and copy actions
+        _action[CUT]->setEnabled(true);
+        _action[COPY]->setEnabled(true);
+    }
+}
+
 void XMainWindow::initXScene()
 {
     _scene = new XScene;
     // setting scene rectangle is necessary for creating and locating a graphics item
-    _scene->setSceneRect(QRectF(0, 0, _INIT_XSCENE_WIDTH, _INIT_XSCENE_HEIGHT));
+    _scene->setSceneRect(QRectF(0, 0, INIT_XSCENE_WIDTH, INIT_XSCENE_HEIGHT));
     connect(_scene, SIGNAL(graphicsItemInserted(QGraphicsItem*)),
             this, SLOT(graphicsItemInserted(QGraphicsItem*)));
+    connect(_scene, SIGNAL(selectionChanged()), this, SLOT(XSceneSelectionChanged()));
 }
 
 void XMainWindow::initXView()
@@ -51,7 +74,7 @@ void XMainWindow::initXView()
     _view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     _view->setRenderHint(QPainter::Antialiasing);
     _view->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    _view->setMinimumSize(_INIT_XVIEW_WIDTH, _INIT_XVIEW_HEIGHT);
+    _view->setMinimumSize(INIT_XVIEW_WIDTH, INIT_XVIEW_HEIGHT);
     //set drag mode to select a group of widgets
     _view->setDragMode(QGraphicsView::RubberBandDrag);
 }
@@ -100,6 +123,7 @@ void XMainWindow::initEditToolBar()
     _action[DEL] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/delete.png"), tr("&Delete"), this, SLOT(del()));
     _action[DEL]->setShortcut(tr("Del"));
     _action[DEL]->setToolTip(tr("Delete (Del)"));
+    _action[DEL]->setEnabled(false);
     _action[UNDO] = _toolBar[EDIT]->addAction(QIcon(":/icon/images/undo.png"), tr("&Undo"), this, SLOT(undo()));
     _action[UNDO]->setShortcut(tr("Ctrl+Z"));
     _action[UNDO]->setToolTip(tr("Undo (Ctrl+Z)"));
@@ -128,7 +152,6 @@ void XMainWindow::initClipboardToolBar()
     _action[PASTE] = _toolBar[CLIPBOARD]->addAction(QIcon(":/icon/images/paste.png"), tr("&Paste"), this, SLOT(paste()));
     _action[PASTE]->setShortcut(tr("Ctrl+V"));
     _action[PASTE]->setToolTip(tr("Paste (Ctrl+V)"));
-    _action[PASTE]->setEnabled(false);
 }
 
 void XMainWindow::initInsertToolBar()
@@ -291,16 +314,117 @@ void XMainWindow::rotate()
 {
 }
 
+/// Clear previous selection and select items in the QList
+void XMainWindow::selectItems(const QList<QGraphicsItem*> &items)
+{
+    Q_ASSERT(_scene);
+    _scene->clearSelection();
+    foreach (QGraphicsItem *item, items)
+        item->setSelected(true);
+}
+
+/// Read format: type,Object;type,Object;...
+void XMainWindow::readItems(QDataStream &in, int offset, bool select)
+{
+    QList<QGraphicsItem *> items;
+    while (!in.atEnd()) {
+        int itemType;
+        in >> itemType;
+        switch (itemType) {
+        case XRect::Type: {
+            XRect *xrect = new XRect;
+            in >> *xrect;
+            items << xrect;
+            break;
+        }
+        }
+    }
+    XScene::sortByZValue(items); // keep hierarchical relationship of items
+    foreach (QGraphicsItem *item, items) {
+        Q_ASSERT(item);
+        _scene->addItem(item);
+        item->moveBy(offset, offset);
+        if (select)
+            selectItems(items);
+    }
+}
+
+const QString &XMainWindow::mimeType(int typeId)
+{
+    Q_ASSERT(0 <= typeId && typeId < NUM_MIME_TYPES);
+    /// Customized MIME type associated with QByteArray data
+    static const QString mimeTypeStr[NUM_MIME_TYPES] = {
+        "XType_MimeDataType", // XTYPE_MIME
+    };
+    return mimeTypeStr[typeId];
+}
+
+
+/// Write format: type,Object;type,Object;...
+void XMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem*> &items)
+{
+    foreach (QGraphicsItem *item, items) {
+        int type = item->type();
+        out << type;
+        switch (type) {
+        case XRect::Type:
+            out << *static_cast<XRect *>(item); break;
+        default: Q_ASSERT(!"Unknown item type found!");
+        }
+    }
+}
+
+void XMainWindow::copyItems(const QList<QGraphicsItem*> &items)
+{
+    QByteArray copiedItems;
+    QDataStream outStream(&copiedItems, QIODevice::WriteOnly);
+    writeItems(outStream, items);
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setData(mimeType(), copiedItems);
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setMimeData(mimeData);
+}
+
 void XMainWindow::cut()
 {
+    QList<QGraphicsItem*> items = _scene->selectedItems();
+    Q_ASSERT(!items.isEmpty());
+    setPasteOffset(); // the first copy will be pasted in the same position
+    copyItems(items);
+    QListIterator<QGraphicsItem*> i(items);
+    while (i.hasNext()) {
+#if QT_VERSION >= 0x040600
+        QScopedPointer<QGraphicsItem> item(i.next());
+        _scene->removeItem(item.data());
+#else
+        QGraphicsItem *item = i.next();
+        _scene->removeItem(item);
+        delete item;
+#endif
+    }
 }
 
 void XMainWindow::copy()
 {
+    QList<QGraphicsItem*> items = _scene->selectedItems();
+    Q_ASSERT(!items.isEmpty());
+    setPasteOffset();
+    incPasteOffset(); // the first copy will be pasted with a position offset
+    copyItems(items);
 }
 
 void XMainWindow::paste()
 {
+    QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+    if (!mimeData)
+        return; // paste nothing
+    if (mimeData->hasFormat(mimeType())) {
+        QByteArray copiedItems = mimeData->data(mimeType());
+        QDataStream inStream(&copiedItems, QIODevice::ReadOnly);
+        readItems(inStream, pasteOffset(), true); // paste and select only new items
+        incPasteOffset(); // next copy will be pasted with a position offset
+    }
 }
 
 void XMainWindow::setZoomScale(int newScalePercentage)

@@ -126,12 +126,12 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     if (_itemIndicator) { // add real
         clearSelection();
         switch (_mode) {
-        case INS_RECT:
-            Q_ASSERT(qgraphicsitem_cast<XRect *>(_itemIndicator));
-            emit graphicsItemInserted(
-                        addXRect(_itemIndicator->pos(),
-                                 qgraphicsitem_cast<XRect *>(_itemIndicator)->rect()));
+        case INS_RECT: {
+            XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
+            Q_ASSERT(xrect);
+            emit graphicsItemInserted(addXRect(xrect->pos(), xrect->rect()));
             break;
+        }
         default:
             Q_ASSERT(!"Unknown graphics item!");
         }
@@ -157,23 +157,24 @@ qreal XScene::topZValue() const
     return topItem() ? topItem()->zValue() : qreal(0.0);
 }
 
-inline bool QGraphicsItemZValueLessThan(const QGraphicsItem *item1, const QGraphicsItem *item2)
-{
-    Q_ASSERT(item1 && item2);
-    return item1->zValue() < item2->zValue();
-}
-
-inline void sortByZValue(QList<QGraphicsItem *> &items)
-{
-    qSort(items.begin(), items.end(), QGraphicsItemZValueLessThan);
-}
-
 inline void swapZValue(QGraphicsItem *item1, QGraphicsItem *item2)
 {
     Q_ASSERT(item1 && item2);
     qreal z = item1->zValue();
     item1->setZValue(item2->zValue());
     item2->setZValue(z);
+}
+
+inline bool QGraphicsItemZValueLessThan(const QGraphicsItem *item1, const QGraphicsItem *item2)
+{
+    Q_ASSERT(item1 && item2);
+    return item1->zValue() < item2->zValue();
+}
+
+/// Items will be sorted from bottom up
+void XScene::sortByZValue(QList<QGraphicsItem *> &items)
+{
+    qSort(items.begin(), items.end(), QGraphicsItemZValueLessThan);
 }
 
 void XScene::bringForwardSelectedItems()
