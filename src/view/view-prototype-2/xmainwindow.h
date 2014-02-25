@@ -12,6 +12,7 @@ class QToolBar;
 class QAction;
 class QGraphicsItem;
 class QDataStream;
+class QShortcut;
 QT_END_NAMESPACE
 
 class XMainWindow : public QMainWindow
@@ -25,6 +26,7 @@ private slots:
     void graphicsItemInserted(QGraphicsItem *item);
     void XSceneSelectionChanged();
 
+    // Graphics scene and view
 private:
     XScene *_scene;
     XGraphicsView *_view;
@@ -37,14 +39,15 @@ private:
     void initXView();
     void initCentralWidget();
 
+    // Toolbars and actions
 private:
-    enum __ToolBar { // DO NOT modify any of the following values!
+    enum { // DO NOT modify any of the following values!
         FILE, EDIT, CLIPBOARD, INSERT, ARRANGE,
         NUM_TOOLBARS // NUM_TOOLBARS must be the last element! It indicates how many toolbars there are.
     };
     QToolBar **_toolBar;
 
-    enum __Action { // DO NOT modify any of the following values!
+    enum { // DO NOT modify any of the following values!
         SAVE, OPEN,
         DEL, UNDO, REDO, FIND,
         INS_RECT, INS_LINE, INS_OVAL, INS_TEXT, INS_CURVE, INS_POLYGON,
@@ -65,6 +68,7 @@ private:
 
     void initToolBars();
 
+    // Status bar
 private:
     ZoomWidget *_zoomWidget;
 private:
@@ -99,7 +103,7 @@ private slots:
     // zoom
     void setZoomScale(int newScalePercentage);
 
-    /// Cut, copy and paste
+    // Cut, copy and paste
 private:
     enum { PASTE_OFFSET_ORIG = 0, PASTE_OFFSET_INC = 5 };
     int _pasteOffset;
@@ -111,14 +115,25 @@ private:
     void readItems(QDataStream &in, int offset, bool select);
     void writeItems(QDataStream &out, const QList<QGraphicsItem*> &items);
     void copyItems(const QList<QGraphicsItem*> &items);
-
 private:
     enum {
-        XTYPE_MIME = 0,
+        XTYPE_MIME,
         NUM_MIME_TYPES  // THIS MUST BE THE LAST ENUM!
     };
 private:
     static const QString &mimeType(int typeId = XTYPE_MIME);
+
+    // Shortcuts
+private:
+    enum {
+        CTRL_A,
+        NUM_SHORTCUTS // THIS MUST BE THE LAST ENUM!
+    };
+    QShortcut **_shortcut;
+private:
+    void initShortcut();
+private slots:
+    void selectAllItems();
 };
 
 #endif // XMAINWINDOW_H

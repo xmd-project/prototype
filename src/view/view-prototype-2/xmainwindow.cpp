@@ -12,6 +12,7 @@
 #include <QMimeData>
 #include <QApplication>
 #include <QClipboard>
+#include <QShortcut>
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,11 +22,13 @@ XMainWindow::XMainWindow(QWidget *parent) :
     initCentralWidget();
     initToolBars();
     initStatusBar();
+    initShortcut();
 }
 XMainWindow::~XMainWindow()
 {
     delete[] _action;
     delete[] _toolBar;
+    delete[] _shortcut;
 }
 
 void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
@@ -434,4 +437,19 @@ void XMainWindow::setZoomScale(int newScalePercentage)
     _view->resetMatrix();
     _view->translate(oldMatrix.dx(), oldMatrix.dy());
     _view->scale(newScale, newScale);
+}
+
+void XMainWindow::initShortcut()
+{
+    _shortcut = new QShortcut *[NUM_SHORTCUTS];
+
+    _shortcut[CTRL_A] = new QShortcut(QKeySequence::SelectAll, this);
+    connect(_shortcut[CTRL_A], SIGNAL(activated()), this, SLOT(selectAllItems()));
+}
+
+void XMainWindow::selectAllItems()
+{
+    Q_ASSERT(_scene);
+    foreach (QGraphicsItem *item, _scene->items())
+        item->setSelected(true);
 }
