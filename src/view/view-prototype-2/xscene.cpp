@@ -244,9 +244,9 @@ void XScene::group()
     foreach (QGraphicsItem *item, selectedItems())
         if (!item->parentItem()) // an item is never be added to more than 1 group
             itemsToBeAdded << item;
+    if (itemsToBeAdded.size() <= 1)
+        return; // never create an empty group or a group with only one item
     clearSelection(); // and unselected all items before grouping them
-    if (itemsToBeAdded.isEmpty())
-        return; // never create an empty group
     QGraphicsItemGroup *group = createItemGroup(itemsToBeAdded);
     group->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     group->setSelected(true); // select the new group

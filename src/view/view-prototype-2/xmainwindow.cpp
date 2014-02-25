@@ -3,6 +3,7 @@
 #include "xgraphicsview.h"
 #include "xrect.h"
 #include "zoomwidget.h"
+#include "xgroup.h"
 #include <QGraphicsItem>
 #include <QHBoxLayout>
 #include <QToolBar>
@@ -44,18 +45,36 @@ void XMainWindow::graphicsItemInserted(QGraphicsItem *item)
 void XMainWindow::XSceneSelectionChanged()
 {
     Q_ASSERT(_scene);
-    if (_scene->selectedItems().empty()) {
-        // deactivate delete action
+    if (_scene->selectedItems().empty()) { // deactivate actions
+        // delete action
         _action[DEL]->setEnabled(false);
-        // deactivate cut and copy actions
+        // cut and copy actions
         _action[CUT]->setEnabled(false);
         _action[COPY]->setEnabled(false);
-    } else {
-        // activate delete action
+        // bring forward and send backward
+        _action[BRING_FORWARD]->setEnabled(false);
+        _action[SEND_BACKWARD]->setEnabled(false);
+        // group and ungroup
+        _action[GROUP]->setEnabled(false);
+        _action[UNGROUP]->setEnabled(false);
+    } else { // activate delete action
+        // delete action
         _action[DEL]->setEnabled(true);
-        // activate cut and copy actions
+        // cut and copy actions
         _action[CUT]->setEnabled(true);
         _action[COPY]->setEnabled(true);
+        // bring forward and send backward
+        _action[BRING_FORWARD]->setEnabled(true);
+        _action[SEND_BACKWARD]->setEnabled(true);
+        // group and ungroup
+        if (_scene->selectedItems().size() > 1) // never group single item
+            _action[GROUP]->setEnabled(true);
+        foreach (QGraphicsItem *item, _scene->selectedItems()) {
+            if (qgraphicsitem_cast<XGroup *>(item)) {
+                _action[UNGROUP]->setEnabled(true);
+                break;
+            }
+        }
     }
 }
 
@@ -217,15 +236,19 @@ void XMainWindow::initArrangeToolBar()
     _action[BRING_FORWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/bring_forward.png"), tr("Bring &Forward"), this, SLOT(bringForward()));
     _action[BRING_FORWARD]->setShortcut(tr("Alt+F"));
     _action[BRING_FORWARD]->setToolTip(tr("Bring Forward (Alt+F)"));
+    _action[BRING_FORWARD]->setEnabled(false);
     _action[SEND_BACKWARD] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/send_backward.png"), tr("Send &Backward"), this, SLOT(sendBackward()));
     _action[SEND_BACKWARD]->setShortcut(tr("Alt+B"));
     _action[SEND_BACKWARD]->setToolTip(tr("Send Backward (Alt+B)"));
+    _action[SEND_BACKWARD]->setEnabled(false);
     _action[GROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/group.png"), tr("&Group"), this, SLOT(group()));
     _action[GROUP]->setShortcut(tr("Alt+G"));
     _action[GROUP]->setToolTip(tr("Group (Alt+G)"));
+    _action[GROUP]->setEnabled(false);
     _action[UNGROUP] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/ungroup.png"), tr("&Ungroup"), this, SLOT(ungroup()));
     _action[UNGROUP]->setShortcut(tr("Alt+U"));
     _action[UNGROUP]->setToolTip(tr("Ungroup (Alt+U)"));
+    _action[UNGROUP]->setEnabled(false);
     _action[ROTATE] = _toolBar[ARRANGE]->addAction(QIcon(":/icon/images/rotate.png"), tr("&Rotate"), this, SLOT(rotate()));
     _action[ROTATE]->setShortcut(tr("Ctrl+R"));
     _action[ROTATE]->setToolTip(tr("Rotate (Ctrl+R)"));
