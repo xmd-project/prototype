@@ -2,7 +2,10 @@
 #define XMD_H
 
 namespace Xmd {
-
+enum IOEnum {
+    FILE_FORMAT_IDENTIFIER = 2121039,
+    VERSION_NUMBER = 20
+};
 enum XTypeEnum {
     XTYPE=0, // DO NOT MODIFY THIS VALUE! New X types are added below.
     XGROUP, XRECT,

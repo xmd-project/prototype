@@ -29,5 +29,6 @@
         <file>images/app.png</file>
         <file>images/zoom_in.png</file>
         <file>images/zoom_out.png</file>
+        <file>images/saveas.png</file>
     </qresource>
 </RCC>

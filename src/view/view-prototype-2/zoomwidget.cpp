@@ -3,15 +3,14 @@
 
 ZoomWidget::ZoomWidget(QWidget *parent) :
     QWidget(parent),
-    _ui(new Ui::ZoomWidget),
-    _zoomScale(INIT_SPINBOX_VALUE)
+    _ui(new Ui::ZoomWidget)
 {
     _ui->setupUi(this);
 
     _ui->zoomSpinBox->setMinimum(MIN_SPINBOX_VALUE);
     _ui->zoomSpinBox->setMaximum(MAX_SPINBOX_VALUE);
     _ui->zoomSpinBox->setValue(INIT_SPINBOX_VALUE);
-    connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setZoomScale(int)));
+    connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SIGNAL(scaleChanged(int)));
     connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
 
     _ui->zoomHorizontalSlider->setMinimum(MIN_SLIDER_VALUE);
@@ -27,6 +26,11 @@ ZoomWidget::ZoomWidget(QWidget *parent) :
 ZoomWidget::~ZoomWidget()
 {
     delete _ui;
+}
+
+void ZoomWidget::resetZoomScale()
+{
+    setSpinBoxValue(INIT_SPINBOX_VALUE);
 }
 
 inline int nearByInt(const qreal value)
@@ -70,20 +74,16 @@ int ZoomWidget::sliderValueToSpinBoxValue(int value)
     return nearByInt(sliderValue);
 }
 
-void ZoomWidget::setSliderValue(int value)
+void ZoomWidget::setSliderValue(int spinBoxValue)
 {
     Q_ASSERT(_ui->zoomHorizontalSlider);
-    disconnect(_ui->zoomHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
-    _ui->zoomHorizontalSlider->setValue(spinBoxValueToSliderValue(value));
-    connect(_ui->zoomHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
+    _ui->zoomHorizontalSlider->setValue(spinBoxValueToSliderValue(spinBoxValue));
 }
 
-void ZoomWidget::setSpinBoxValue(int value)
+void ZoomWidget::setSpinBoxValue(int sliderValue)
 {
     Q_ASSERT(_ui->zoomSpinBox);
-    disconnect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
-    _ui->zoomSpinBox->setValue(sliderValueToSpinBoxValue(value));
-    connect(_ui->zoomSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setSliderValue(int)));
+    _ui->zoomSpinBox->setValue(sliderValueToSpinBoxValue(sliderValue));
 }
 
 void ZoomWidget::sliderPageUp()
@@ -96,11 +96,4 @@ void ZoomWidget::sliderPageDown()
 {
     Q_ASSERT(_ui->zoomHorizontalSlider);
     _ui->zoomHorizontalSlider->setValue(_ui->zoomHorizontalSlider->value() - SLIDER_PAGE_STEP);
-}
-
-void ZoomWidget::setZoomScale(int value)
-{
-    Q_ASSERT(_ui->zoomSpinBox);
-    _zoomScale = value;
-    emit scaleChanged(_zoomScale);
 }

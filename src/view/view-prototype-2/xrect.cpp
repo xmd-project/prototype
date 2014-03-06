@@ -40,7 +40,6 @@ QDataStream &operator<<(QDataStream &out, const XRect &xrect)
     return out;
 }
 
-
 QDataStream &operator>>(QDataStream &in, XRect &xrect)
 {
     QPointF position;

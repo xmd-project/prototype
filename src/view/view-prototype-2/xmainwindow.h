@@ -13,6 +13,7 @@ class QAction;
 class QGraphicsItem;
 class QDataStream;
 class QShortcut;
+class QFile;
 QT_END_NAMESPACE
 
 class XMainWindow : public QMainWindow
@@ -48,7 +49,7 @@ private:
     QToolBar **_toolBar;
 
     enum { // DO NOT modify any of the following values!
-        SAVE, OPEN,
+        SAVE, SAVEAS, OPEN,
         DEL, UNDO, REDO, FIND,
         INS_RECT, INS_LINE, INS_OVAL, INS_TEXT, INS_CURVE, INS_POLYGON,
         BRING_FORWARD, SEND_BACKWARD, GROUP, UNGROUP, ROTATE,
@@ -76,7 +77,8 @@ private:
 
 private slots:
     // file actions
-    void save();
+    bool save();
+    bool saveAs();
     void open();
     // edit actions
     void del();
@@ -102,17 +104,21 @@ private slots:
     void paste();
     // zoom
     void setZoomScale(int newScalePercentage);
+private:
+    bool openXMDFile(QFile *file, QDataStream &in);
+    bool okToClearData();
+    void clear();
 
     // Cut, copy and paste
 private:
     enum { PASTE_OFFSET_ORIG = 0, PASTE_OFFSET_INC = 15 };
     int _pasteOffset;
 private:
-    void setPasteOffset(int origOffset = PASTE_OFFSET_ORIG) { _pasteOffset = origOffset; }
+    void setPasteOffset(const int origOffset = PASTE_OFFSET_ORIG) { _pasteOffset = origOffset; }
     int pasteOffset() const { return _pasteOffset; }
     int incPasteOffset(int offsetInc = PASTE_OFFSET_INC) { return _pasteOffset += offsetInc; }
     void selectItems(const QList<QGraphicsItem*> &items);
-    void readItems(QDataStream &in, int offset, bool select);
+    void readItems(QDataStream &in, const int offset = 0, const bool select = false);
     void writeItems(QDataStream &out, const QList<QGraphicsItem*> &items);
     void copyItems(const QList<QGraphicsItem*> &items);
 private:

@@ -226,16 +226,14 @@ QGraphicsItemGroup *XScene::createItemGroup(const QList<QGraphicsItem *> &items)
     QGraphicsItemGroup *group = new XGroup;
     foreach (QGraphicsItem *item, items)
         group->addToGroup(item);
-    group->setZValue(topZValue() + _ZVALUE_INCREMENT);
-    _itemsSortedByZValue << group;
     addItem(group);
     return group;
 }
 
 void XScene::destroyItemGroup(QGraphicsItemGroup *group)
 {
-    QGraphicsScene::destroyItemGroup(group);
     _itemsSortedByZValue.removeOne(group);
+    QGraphicsScene::destroyItemGroup(group);
 }
 
 void XScene::group()
@@ -265,4 +263,12 @@ void XScene::ungroup()
     // select all subitems after dismantling all selected groups
     foreach (QGraphicsItem *subitem, subitems)
         subitem->setSelected(true);
+}
+
+void XScene::clear()
+{
+    // Removes and deletes all items from the scene,
+    // but otherwise leaves the state of the scene unchanged.
+    QGraphicsScene::clear();
+    _itemsSortedByZValue.clear();
 }

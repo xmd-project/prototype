@@ -4,6 +4,7 @@
 #include "xrect.h"
 #include "zoomwidget.h"
 #include "xgroup.h"
+#include "xmd.h"
 #include <QGraphicsItem>
 #include <QHBoxLayout>
 #include <QToolBar>
@@ -14,6 +15,9 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QShortcut>
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -132,11 +136,12 @@ void XMainWindow::initFileToolBar()
     _action[OPEN] = _toolBar[FILE]->addAction(QIcon(":/icon/images/open.png"), tr("&Open"), this, SLOT(open()));
     _action[OPEN]->setShortcut(tr("Ctrl+O"));
     _action[OPEN]->setToolTip(tr("Open (Ctrl+O)"));
-    _action[OPEN]->setEnabled(false);
     _action[SAVE] = _toolBar[FILE]->addAction(QIcon(":/icon/images/save.png"), tr("&Save"), this, SLOT(save()));
     _action[SAVE]->setShortcut(tr("Ctrl+S"));
     _action[SAVE]->setToolTip(tr("Save (Ctrl+S)"));
-    _action[SAVE]->setEnabled(false);
+    _action[SAVEAS] = _toolBar[FILE]->addAction(QIcon(":/icon/images/saveas.png"), tr("Save &As"), this, SLOT(saveAs()));
+    _action[SAVEAS]->setShortcut(QKeySequence::SaveAs);
+    _action[SAVEAS]->setToolTip(tr("Save As"));
 }
 
 void XMainWindow::initEditToolBar()
@@ -262,12 +267,144 @@ void XMainWindow::initStatusBar()
     statusBar()->addPermanentWidget(_zoomWidget);
 }
 
-void XMainWindow::save()
+bool XMainWindow::save()
 {
+    const QString filename = windowFilePath();
+    if (filename.isEmpty() || filename == tr("Unnamed"))
+        return saveAs();
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+        return false;
+    QDataStream outStream(&file);
+    outStream << Xmd::FILE_FORMAT_IDENTIFIER << Xmd::VERSION_NUMBER;
+    outStream.setVersion(QDataStream::Qt_5_1);
+    writeItems(outStream, _scene->items());
+    file.close();
+    return true;
+}
+
+bool XMainWindow::saveAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    tr("%1 - Save As").arg(QApplication::applicationName()),
+                                                    ".", tr("XMD (*.xmd)"));
+    if (filename.isEmpty())
+        return false;
+    if (!filename.toLower().endsWith(".xmd"))
+        filename += ".xmd";
+    setWindowFilePath(filename);
+    return save();
+}
+
+template<typename T>
+bool isOkToClearData(bool (T::*saveData)(), T *parent,
+                   const QString &title, const QString &text,
+                   const QString &detailedText=QString())
+{
+    Q_ASSERT(saveData && parent);
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
+    messageBox->setWindowModality(Qt::WindowModal);
+    messageBox->setIcon(QMessageBox::Question);
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(QApplication::applicationName()).arg(title));
+    messageBox->setText(text);
+    if (!detailedText.isEmpty())
+        messageBox->setInformativeText(detailedText);
+    messageBox->addButton(QMessageBox::Save);
+    messageBox->addButton(QMessageBox::Discard);
+    messageBox->addButton(QMessageBox::Cancel);
+    messageBox->setDefaultButton(QMessageBox::Save);
+    messageBox->exec();
+    if (messageBox->clickedButton() ==
+            messageBox->button(QMessageBox::Cancel))
+        return false;
+    if (messageBox->clickedButton() ==
+            messageBox->button(QMessageBox::Save))
+        return (parent->*saveData)();
+    return true;
+}
+
+bool XMainWindow::okToClearData()
+{
+    if (isWindowModified())
+        return isOkToClearData(&XMainWindow::save, this,
+                               tr("Unsaved changes"), tr("Save unsaved changes?"));
+    return true;
+}
+
+void XMainWindow::clear()
+{
+    _scene->clear();
+    _zoomWidget->resetZoomScale();
 }
 
 void XMainWindow::open()
 {
+    if (!okToClearData())
+        return;
+    const QString &filename =
+            QFileDialog::getOpenFileName(
+                this,
+                tr("%1 - Open").arg(QApplication::applicationName()),
+                ".", tr("XMD (*.xmd)"));
+    if (filename.isEmpty())
+        return;
+    setWindowFilePath(filename);
+    QFile file(windowFilePath());
+    QDataStream in;
+    if (!openXMDFile(&file, in))
+        return;
+    in.setVersion(QDataStream::Qt_5_1);
+    clear();
+    readItems(in);
+}
+
+namespace {
+void warning(QWidget *parent, const QString &title,
+             const QString &text, const QString &detailedText=QString())
+{
+    QScopedPointer<QMessageBox> messageBox(new QMessageBox(parent));
+    if (parent)
+        messageBox->setWindowModality(Qt::WindowModal);
+    messageBox->setWindowTitle(QString("%1 - %2")
+                               .arg(QApplication::applicationName()).arg(title));
+    messageBox->setText(text);
+    if (!detailedText.isEmpty())
+        messageBox->setInformativeText(detailedText);
+    messageBox->setIcon(QMessageBox::Warning);
+    messageBox->addButton(QMessageBox::Ok);
+    messageBox->exec();
+}
+}
+
+bool XMainWindow::openXMDFile(QFile *file, QDataStream &in)
+{
+    if (!file->open(QIODevice::ReadOnly)) {
+        warning(this, tr("Error"), tr("Failed to open file: %1")
+                .arg(file->errorString()));
+        return false;
+    }
+    in.setDevice(file);
+    int fileFormatIdentifier;
+    Q_ASSERT(sizeof(fileFormatIdentifier) == sizeof(Xmd::FILE_FORMAT_IDENTIFIER));
+    in >> fileFormatIdentifier;
+    if (fileFormatIdentifier != Xmd::FILE_FORMAT_IDENTIFIER) {
+        warning(this, tr("Error"),
+                tr("%1 is not a %2 file").arg(file->fileName())
+                .arg(QApplication::applicationName()));
+        return false;
+    }
+    int versionNumber;
+    Q_ASSERT(sizeof(versionNumber) == sizeof(Xmd::VERSION_NUMBER));
+    in >> versionNumber;
+    if (versionNumber > Xmd::VERSION_NUMBER) {
+        warning(this, tr("Error"),
+                tr("%1 needs a more recent version of %2")
+                .arg(file->fileName())
+                .arg(QApplication::applicationName()));
+        return false;
+    }
+    return true;
 }
 
 void XMainWindow::del()
@@ -360,7 +497,7 @@ void XMainWindow::selectItems(const QList<QGraphicsItem*> &items)
 }
 
 /// Read format: type,Object;type,Object;...
-void XMainWindow::readItems(QDataStream &in, int offset, bool select)
+void XMainWindow::readItems(QDataStream &in, const int offset, const bool select)
 {
     QList<QGraphicsItem *> items;
     while (!in.atEnd()) {
@@ -371,11 +508,13 @@ void XMainWindow::readItems(QDataStream &in, int offset, bool select)
             XRect *xrect = new XRect;
             in >> *xrect;
             items << xrect;
-            break;
+            break;            
         }
+        default:
+            Q_ASSERT(!"Read unknown data type!");
         }
     }
-    XScene::sortByZValue(items); // keep hierarchical relationship of items
+    //XScene::sortByZValue(items); // keep hierarchical relationship of items
     foreach (QGraphicsItem *item, items) {
         Q_ASSERT(item);
         _scene->addItem(item);
@@ -405,6 +544,8 @@ void XMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem*> &item
         switch (type) {
         case XRect::Type:
             out << *static_cast<XRect *>(item); break;
+        //case XGroup::Type:
+            //out << *static_cast<XGroup *>(item); break;
         default: Q_ASSERT(!"Unknown item type found!");
         }
     }

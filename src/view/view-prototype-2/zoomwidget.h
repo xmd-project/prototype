@@ -14,21 +14,19 @@ class ZoomWidget : public QWidget
 public:
     explicit ZoomWidget(QWidget *parent = 0);
     ~ZoomWidget();
-    int zoomScale() const { return _zoomScale; }
+    void resetZoomScale();
 
 signals:
     void scaleChanged(int newScale);
 
 private slots:
-    void setSliderValue(int);
-    void setSpinBoxValue(int);
+    void setSliderValue(int spinBoxValue);
+    void setSpinBoxValue(int sliderValue);
     void sliderPageUp();
     void sliderPageDown();
-    void setZoomScale(int);
 
 private:
     Ui::ZoomWidget *_ui;
-    int _zoomScale;
 
 private:
     enum {

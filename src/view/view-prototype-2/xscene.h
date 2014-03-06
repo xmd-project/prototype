@@ -16,6 +16,9 @@ public:
     QGraphicsItemGroup *createItemGroup(const QList<QGraphicsItem *> & items);
     void destroyItemGroup(QGraphicsItemGroup * group);
 
+public slots:
+    void clear();
+
 signals:
     void graphicsItemInserted(QGraphicsItem *item);
 
