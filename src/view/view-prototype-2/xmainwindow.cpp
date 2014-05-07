@@ -524,7 +524,8 @@ const QString &XMainWindow::mimeType(int typeId)
 void XMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem*> &items)
 {
     foreach (QGraphicsItem *item, items)
-        Xmd::writeXGraphicsItem(out, item);
+        if (!item->parentItem()) // Only write top items here
+            Xmd::writeXGraphicsItem(out, item); // child items will be written recursively
 }
 
 void XMainWindow::copyItems(const QList<QGraphicsItem*> &items)

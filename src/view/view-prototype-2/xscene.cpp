@@ -254,7 +254,7 @@ void XScene::ungroup()
 {
     QList<QGraphicsItem *>subitems;
     foreach (QGraphicsItem *item, selectedItems()) {
-        QGraphicsItemGroup *group = qgraphicsitem_cast<XGroup *>(item);
+        XGroup *group = qgraphicsitem_cast<XGroup *>(item);
         if (group) {
             subitems << group->childItems();
             destroyItemGroup(group);

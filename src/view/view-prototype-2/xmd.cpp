@@ -1,5 +1,6 @@
 #include "xmd.h"
 #include "xrect.h"
+#include "xgroup.h"
 
 namespace Xmd {
 void writeXGraphicsItem(QDataStream &out, const QGraphicsItem *item)
@@ -9,8 +10,8 @@ void writeXGraphicsItem(QDataStream &out, const QGraphicsItem *item)
     switch (type) {
     case XRect::Type:
         out << *static_cast<const XRect *>(item); break;
-    //case XGroup::Type:
-        //out << *static_cast<XGroup *>(item); break;
+    case XGroup::Type:
+        out << *static_cast<const XGroup *>(item); break;
     default: Q_ASSERT(!"Unknown item type found!");
     }
     out << XGRAPHICSITEM_END;
@@ -39,6 +40,7 @@ QGraphicsItem *readXGraphicsItem(QDataStream &in)
     in >> itemType;
     switch (itemType) {
     case XRect::Type: return readXItem(in, new XRect);
+    case XGroup::Type: return readXItem(in, new XGroup);
     default: Q_ASSERT(!"Read unknown data type!");
     }
     // recursively load child items.
