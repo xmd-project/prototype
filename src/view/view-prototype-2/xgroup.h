@@ -13,6 +13,7 @@ public:
     int type() const { return Type; }
 
     void addToGroup(QGraphicsItem *item);
+    void removeFromGroup(QGraphicsItem * item);
 };
 
 /// Object data I/O operations

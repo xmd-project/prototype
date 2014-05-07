@@ -13,6 +13,13 @@ void XGroup::addToGroup(QGraphicsItem *item)
     QGraphicsItemGroup::addToGroup(item);
 }
 
+void XGroup::removeFromGroup(QGraphicsItem *item)
+{
+    Q_ASSERT(item);
+    item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    QGraphicsItemGroup::removeFromGroup(item);
+}
+
 QDataStream &operator<<(QDataStream &out, const XGroup &xgroup)
 {
     out << xgroup.pos()

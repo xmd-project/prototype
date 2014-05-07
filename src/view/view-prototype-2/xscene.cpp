@@ -223,16 +223,21 @@ void XScene::sendBackwardSelectedItems()
 
 QGraphicsItemGroup *XScene::createItemGroup(const QList<QGraphicsItem *> &items)
 {
-    QGraphicsItemGroup *group = new XGroup;
+    XGroup *xgroup = new XGroup;
     foreach (QGraphicsItem *item, items)
-        group->addToGroup(item);
-    addItem(group);
-    return group;
+        xgroup->addToGroup(item);
+    addItem(xgroup);
+    return xgroup;
 }
 
 void XScene::destroyItemGroup(QGraphicsItemGroup *group)
 {
     _itemsSortedByZValue.removeOne(group);
+    XGroup *xgroup = qgraphicsitem_cast<XGroup *>(group);
+    if (xgroup) {
+        foreach (QGraphicsItem *item, xgroup->childItems())
+            xgroup->removeFromGroup(item);
+    }
     QGraphicsScene::destroyItemGroup(group);
 }
 
