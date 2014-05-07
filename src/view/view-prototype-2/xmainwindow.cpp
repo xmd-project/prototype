@@ -496,24 +496,11 @@ void XMainWindow::selectItems(const QList<QGraphicsItem*> &items)
         item->setSelected(true);
 }
 
-/// Read format: type,Object;type,Object;...
 void XMainWindow::readItems(QDataStream &in, const int offset, const bool select)
 {
     QList<QGraphicsItem *> items;
-    while (!in.atEnd()) {
-        int itemType;
-        in >> itemType;
-        switch (itemType) {
-        case XRect::Type: {
-            XRect *xrect = new XRect;
-            in >> *xrect;
-            items << xrect;
-            break;            
-        }
-        default:
-            Q_ASSERT(!"Read unknown data type!");
-        }
-    }
+    while (!in.atEnd())
+        items << Xmd::readXGraphicsItem(in);
     //XScene::sortByZValue(items); // keep hierarchical relationship of items
     foreach (QGraphicsItem *item, items) {
         Q_ASSERT(item);
@@ -534,21 +521,10 @@ const QString &XMainWindow::mimeType(int typeId)
     return mimeTypeStr[typeId];
 }
 
-
-/// Write format: type,Object;type,Object;...
 void XMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem*> &items)
 {
-    foreach (QGraphicsItem *item, items) {
-        int type = item->type();
-        out << type;
-        switch (type) {
-        case XRect::Type:
-            out << *static_cast<XRect *>(item); break;
-        //case XGroup::Type:
-            //out << *static_cast<XGroup *>(item); break;
-        default: Q_ASSERT(!"Unknown item type found!");
-        }
-    }
+    foreach (QGraphicsItem *item, items)
+        Xmd::writeXGraphicsItem(out, item);
 }
 
 void XMainWindow::copyItems(const QList<QGraphicsItem*> &items)

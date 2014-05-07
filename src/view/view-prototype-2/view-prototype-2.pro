@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     xrect.cpp \
     xpainterconstant.cpp \
     zoomwidget.cpp \
-    xgroup.cpp
+    xgroup.cpp \
+    xmd.cpp
 
 HEADERS  += xmainwindow.h \
     xscene.h \

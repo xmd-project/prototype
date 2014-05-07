@@ -37,6 +37,9 @@ QDataStream &operator<<(QDataStream &out, const XRect &xrect)
         << xrect.rect()
         << xrect.pen()
         << xrect.brush();
+    // recursively save child items.
+    foreach (QGraphicsItem *item, xrect.childItems())
+        Xmd::writeXGraphicsItem(out, item);
     return out;
 }
 
@@ -57,5 +60,9 @@ QDataStream &operator>>(QDataStream &in, XRect &xrect)
     xrect.setRect(rect);
     xrect.setPen(pen);
     xrect.setBrush(brush);
+    // recursively load child items.
+    QGraphicsItem *child;
+    while ((child = Xmd::readXGraphicsItem(in)))
+        child->setParentItem(&xrect);
     return in;
 }
