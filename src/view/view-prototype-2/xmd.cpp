@@ -16,26 +16,33 @@ void writeXGraphicsItem(QDataStream &out, const QGraphicsItem *item)
     out << XGRAPHICSITEM_END;
 }
 
-/// Return loaded XGraphicsItem pointer; return 0 if no item.
+/// Load a XGraphicsItem into destItem.
+/// Return destItem.
+template <typename T>
+inline QGraphicsItem *readXItem(QDataStream &in, T *destItem)
+{
+    Q_ASSERT(destItem);
+    in >> *destItem;
+    return destItem;
+}
+
+/// Return a pointer of the loaded XGraphicsItem.
+/// Return 0 if no item.
 QGraphicsItem *readXGraphicsItem(QDataStream &in)
 {
-    int itemDelimiter, itemType;
+    int itemDelimiter;
     in >> itemDelimiter;
     if (XGRAPHICSITEM_END == itemDelimiter)
         return 0;
+    Q_ASSERT(XGRAPHICSITEM_BEGIN == itemDelimiter || !"Unknown file format");
+    int itemType;
     in >> itemType;
-    Q_ASSERT(XGRAPHICSITEM_BEGIN==itemDelimiter || !"Unknown file format");
     switch (itemType) {
-    case XRect::Type: {
-        XRect *xrect = new XRect;
-        in >> *xrect;
-        return xrect;
-    }
-    default:
-        Q_ASSERT(!"Read unknown data type!");
+    case XRect::Type: return readXItem(in, new XRect);
+    default: Q_ASSERT(!"Read unknown data type!");
     }
     // recursively load child items.
 
-    Q_ASSERT(XGRAPHICSITEM_END==itemDelimiter || !"Unknown file format");
+    Q_ASSERT(XGRAPHICSITEM_END == itemDelimiter || !"Unknown file format");
 }
 } // namespace Xmd
