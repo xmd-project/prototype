@@ -6,6 +6,13 @@ XGroup::XGroup(QGraphicsItem *parent) :
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
 }
 
+void XGroup::addToGroup(QGraphicsItem *item)
+{
+    Q_ASSERT(item);
+    item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+    QGraphicsItemGroup::addToGroup(item);
+}
+
 QDataStream &operator<<(QDataStream &out, const XGroup &xgroup)
 {
     out << xgroup.pos()

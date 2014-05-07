@@ -11,6 +11,8 @@ public:
 
     enum { Type = UserType + Xmd::XGROUP };
     int type() const { return Type; }
+
+    void addToGroup(QGraphicsItem *item);
 };
 
 /// Object data I/O operations
