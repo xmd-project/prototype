@@ -43,8 +43,6 @@ QGraphicsItem *readXGraphicsItem(QDataStream &in)
     case XGroup::Type: return readXItem(in, new XGroup);
     default: Q_ASSERT(!"Read unknown data type!");
     }
-    // recursively load child items.
-
     Q_ASSERT(XGRAPHICSITEM_END == itemDelimiter || !"Unknown file format");
 }
 } // namespace Xmd

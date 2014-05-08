@@ -47,15 +47,16 @@ public:
 
 private:
     void init();
-    XRect *createXRect(
+    XRect *createXRectIndicator(
             const QPointF &pos, const QRectF &rect,
             const QPen &boundaryPen = XPainterConstant::pen(XPainterConstant::PEN_DEFAULT_BOUNDARY),
             const QBrush &fillBrush = XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL)
             );
-    XRect *addXRect(const QPointF &pos, const QRectF &rect);
+    XRect *createXRect(QGraphicsItem *indicator);
     QGraphicsItem *topItem();
     const QGraphicsItem *topItem() const;
     qreal topZValue() const;
+    void removeItemIndicator(QGraphicsItem *&indicator);
 
 private:
     Mode _mode;

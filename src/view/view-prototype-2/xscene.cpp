@@ -34,7 +34,7 @@ void XScene::addItem(QGraphicsItem *item)
     _itemsSortedByZValue << item;
 }
 
-XRect *XScene::createXRect(
+XRect *XScene::createXRectIndicator(
         const QPointF &pos, const QRectF &rect,
         const QPen &boundaryPen, const QBrush &fillBrush)
 {
@@ -42,7 +42,6 @@ XRect *XScene::createXRect(
     xrect->setPos(pos);
     xrect->setPen(boundaryPen);
     xrect->setBrush(fillBrush);
-    addItem(xrect);
     return xrect;
 }
 
@@ -66,10 +65,11 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         QGraphicsScene::mousePressEvent(mouseEvent);
         break;
     case INS_RECT:
-        _itemIndicator =
-                createXRect(scenePos, QRectF(),
-                            XPainterConstant::pen(XPainterConstant::PEN_SELECT_BOUNDARY),
-                            XPainterConstant::brush(XPainterConstant::BRUSH_SELECT_FILL));
+        _itemIndicator = createXRectIndicator(
+                    scenePos, QRectF(),
+                    XPainterConstant::pen(XPainterConstant::PEN_SELECT_BOUNDARY),
+                    XPainterConstant::brush(XPainterConstant::BRUSH_SELECT_FILL));
+        addItem(_itemIndicator);
         break;
     case INS_LINE:
         break;
@@ -107,9 +107,20 @@ void XScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-XRect *XScene::addXRect(const QPointF &pos, const QRectF &rect)
+void XScene::removeItemIndicator(QGraphicsItem *&indicator)
 {
-    XRect *xrect = createXRect(pos, rect);
+    removeItem(indicator);
+    delete indicator;
+    indicator = 0;
+}
+
+XRect *XScene::createXRect(QGraphicsItem *indicator)
+{
+    XRect *xrectIndicator = qgraphicsitem_cast<XRect *>(indicator);
+    Q_ASSERT(xrectIndicator);
+    XRect *xrect = createXRectIndicator(xrectIndicator->pos(),
+                                        xrectIndicator->rect());
+    Q_ASSERT(xrect);
     if (xrect->rect().isEmpty())
         xrect->setRectDefault();
     xrect->setSelected(true);
@@ -123,22 +134,22 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     Q_ASSERT(NORMAL != _mode);
     if (SELECT == _mode || MOVE == _mode)
         _mode = NORMAL;
-    if (_itemIndicator) { // add real
+    QGraphicsItem *newItem = 0;
+    if (_itemIndicator) { // create and add a real item
         clearSelection();
         switch (_mode) {
-        case INS_RECT: {
-            XRect *xrect = qgraphicsitem_cast<XRect *>(_itemIndicator);
-            Q_ASSERT(xrect);
-            emit graphicsItemInserted(addXRect(xrect->pos(), xrect->rect()));
+        case INS_RECT:
+            newItem = createXRect(_itemIndicator);
+            removeItemIndicator(_itemIndicator); // _itemIndicator's ZValue will be reused
+            addItem(newItem); // reuse _itemIndicator's ZValue
+            emit graphicsItemInserted(newItem);
             break;
-        }
         default:
             Q_ASSERT(!"Unknown graphics item!");
         }
-        removeItem(_itemIndicator);
-        delete _itemIndicator;
-        _itemIndicator = 0;
     }
+    Q_ASSERT(!_itemIndicator || !"The item indicator must be destroyed"
+             " after its corresponding new item is created.");
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
