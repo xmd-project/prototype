@@ -14,6 +14,9 @@ public:
 
     void addToGroup(QGraphicsItem *item);
     void removeFromGroup(QGraphicsItem * item);
+protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent * event);
 };
 
 /// Object data I/O operations

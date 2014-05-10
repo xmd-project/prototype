@@ -18,6 +18,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDebug>
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -496,19 +497,58 @@ void XMainWindow::selectItems(const QList<QGraphicsItem*> &items)
         item->setSelected(true);
 }
 
+namespace {
+/// Move XGraphicsItem to pos() + QPointF(dx, dy)
+void moveBy(QGraphicsItem *&item, const qreal dx, const qreal dy, XScene *xscene)
+{
+    Q_ASSERT(item);
+    if (XGroup::Type != item->type()) {
+        item->moveBy(dx, dy);
+        return;
+    }
+    // Moving an XGroup object doesn't impact its child items' postions.
+    // Therefore, manually move its child items recursively and
+    // build a new XGroup with the moved child items.
+    XGroup *xgroup = qgraphicsitem_cast<XGroup *>(item);
+    Q_ASSERT(xgroup && xscene);
+    QList<QGraphicsItem *> children = xgroup->childItems();
+    QPointF xgroupOffset = xgroup->pos();
+    xscene->destroyItemGroup(xgroup);
+    XGroup *newXgroup = new XGroup;
+    xscene->addItem(newXgroup); // Add a empty new XGroup object
+    xscene->adjustZValue(newXgroup);
+    foreach (QGraphicsItem *child, children) {
+        moveBy(child, dx + xgroupOffset.x(), dy + xgroupOffset.y(), xscene);
+        newXgroup->addToGroup(child); // should also add child to xscene
+        Q_ASSERT(child->scene() == xscene);
+    }
+    item = newXgroup; // update item with a new XGroup object
+}
+} // namespace
+
 void XMainWindow::readItems(QDataStream &in, const int offset, const bool select)
 {
     QList<QGraphicsItem *> items;
     while (!in.atEnd())
-        items << Xmd::readXGraphicsItem(in);
+        items << Xmd::readXGraphicsItem(in); // ZValue is loaded here
     //XScene::sortByZValue(items); // keep hierarchical relationship of items
-    foreach (QGraphicsItem *item, items) {
+    for (QList<QGraphicsItem *>::iterator childIter = items.begin();
+         childIter != items.end(); ++childIter) {
+        QGraphicsItem *&item = *childIter;
         Q_ASSERT(item);
+        qDebug() << "readItems() item->pos() before addItem() - " << item->pos();
         _scene->addItem(item);
-        item->moveBy(offset, offset);
-        if (select)
-            selectItems(items);
+        qDebug() << "readItems() item->pos() after addItem() - " << item->pos();
+        // don't adjust the ZValue when first pasting a cut item
+        // or creating a new item by opening a file
+        if (!offset)
+            _scene->adjustZValue(item);
+        moveBy(item, offset, offset, _scene); // XGroup item will be changed inside moveBy().
+        QGraphicsItem *parent = item->parentItem();
+        qDebug() << "readItems() parent type = " << (parent ? parent->type() : 0);
     }
+    if (select)
+        selectItems(items);
 }
 
 const QString &XMainWindow::mimeType(int typeId)
@@ -523,9 +563,12 @@ const QString &XMainWindow::mimeType(int typeId)
 
 void XMainWindow::writeItems(QDataStream &out, const QList<QGraphicsItem*> &items)
 {
-    foreach (QGraphicsItem *item, items)
-        if (!item->parentItem()) // Only write top items here
+    foreach (QGraphicsItem *item, items) {
+        QGraphicsItem *parent = item->parentItem();
+        qDebug() << "readItems() parent type = " << (parent? parent->type() : 0);
+        if (!parent) // Only write top items here
             Xmd::writeXGraphicsItem(out, item); // child items will be written recursively
+    }
 }
 
 void XMainWindow::copyItems(const QList<QGraphicsItem*> &items)

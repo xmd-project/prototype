@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 
 class XRect;
+class XGroup;
 
 class XScene : public QGraphicsScene
 {
@@ -13,7 +14,7 @@ public:
     explicit XScene(QObject *parent = 0);
     void addItem(QGraphicsItem *item);
     void removeItem(QGraphicsItem *item);
-    QGraphicsItemGroup *createItemGroup(const QList<QGraphicsItem *> & items);
+    XGroup *createItemGroup(const QList<QGraphicsItem *> & items);
     void destroyItemGroup(QGraphicsItemGroup * group);
 
 public slots:
@@ -40,6 +41,7 @@ public:
     static void sortByZValue(QList<QGraphicsItem *> &items);
 
 public:
+    void adjustZValue(QGraphicsItem *item);
     void bringForwardSelectedItems();
     void sendBackwardSelectedItems();
     void group();

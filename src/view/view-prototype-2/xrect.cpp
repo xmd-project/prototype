@@ -2,6 +2,7 @@
 #include "xpainterconstant.h"
 #include <QPen>
 #include <QBrush>
+#include <QDebug>
 
 void XRect::init()
 {
@@ -11,6 +12,7 @@ void XRect::init()
 
     setPen(XPainterConstant::pen(XPainterConstant::PEN_DEFAULT_BOUNDARY));
     setBrush(XPainterConstant::brush(XPainterConstant::BRUSH_DEFAULT_FILL));
+    qDebug() << "XRect::init() - " << pos();
 }
 
 XRect::XRect(QGraphicsItem * parent):
@@ -32,11 +34,16 @@ void XRect::setRectDefault()
 
 QDataStream &operator<<(QDataStream &out, const XRect &xrect)
 {
-    out << xrect.pos()
-        << xrect.zValue()
-        << xrect.rect()
-        << xrect.pen()
-        << xrect.brush();
+    QPointF position = xrect.pos();
+    qreal zValue = xrect.zValue();
+    QRectF rect = xrect.rect();
+    QPen pen = xrect.pen();
+    QBrush brush = xrect.brush();
+    out << position
+        << zValue
+        << rect
+        << pen
+        << brush;
     // recursively save child items.
     foreach (QGraphicsItem *item, xrect.childItems())
         Xmd::writeXGraphicsItem(out, item);

@@ -3,6 +3,7 @@
 #include "xgroup.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QtAlgorithms>
+#include <QDebug>
 
 const qreal XScene::_ZVALUE_INCREMENT = qreal(1.0);
 
@@ -23,15 +24,25 @@ void XScene::init()
 
 void XScene::removeItem(QGraphicsItem *item)
 {
+    if (!item)
+        return;
     QGraphicsScene::removeItem(item);
+    // remove item and all its child items
+    foreach (QGraphicsItem *child, item->childItems())
+        _itemsSortedByZValue.removeOne(child);
     _itemsSortedByZValue.removeOne(item);
 }
 
 void XScene::addItem(QGraphicsItem *item)
 {
-    item->setZValue(topZValue() + _ZVALUE_INCREMENT);
     QGraphicsScene::addItem(item);
+    qDebug() << "addItem(): item->type() = " << item->type() << ", zValue() = " << item->zValue();
     _itemsSortedByZValue << item;
+}
+
+void XScene::adjustZValue(QGraphicsItem *item)
+{
+    item->setZValue(topZValue() + _ZVALUE_INCREMENT);
 }
 
 XRect *XScene::createXRectIndicator(
@@ -70,6 +81,7 @@ void XScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                     XPainterConstant::pen(XPainterConstant::PEN_SELECT_BOUNDARY),
                     XPainterConstant::brush(XPainterConstant::BRUSH_SELECT_FILL));
         addItem(_itemIndicator);
+        adjustZValue(_itemIndicator);
         break;
     case INS_LINE:
         break;
@@ -140,8 +152,10 @@ void XScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
         switch (_mode) {
         case INS_RECT:
             newItem = createXRect(_itemIndicator);
-            removeItemIndicator(_itemIndicator); // _itemIndicator's ZValue will be reused
-            addItem(newItem); // reuse _itemIndicator's ZValue
+            removeItemIndicator(_itemIndicator);
+            addItem(newItem);
+            adjustZValue(newItem);
+            qDebug() << "XScene::mouseReleaseEvent() - " << newItem->pos();
             emit graphicsItemInserted(newItem);
             break;
         default:
@@ -232,12 +246,14 @@ void XScene::sendBackwardSelectedItems()
     }
 }
 
-QGraphicsItemGroup *XScene::createItemGroup(const QList<QGraphicsItem *> &items)
+XGroup *XScene::createItemGroup(const QList<QGraphicsItem *> &items)
 {
     XGroup *xgroup = new XGroup;
+    addItem(xgroup);
+    adjustZValue(xgroup);
+    qDebug() << "XScene::createItemGroup() - " << xgroup->pos();
     foreach (QGraphicsItem *item, items)
         xgroup->addToGroup(item);
-    addItem(xgroup);
     return xgroup;
 }
 
