@@ -18,14 +18,18 @@ SOURCES += main.cpp\
     xnotebrowser.cpp \
     xzoomwidget.cpp \
     xscene.cpp \
-    xdragdropwindow.cpp
+    xdragdropwindow.cpp \
+    xnodedata.cpp \
+    xdatabase.cpp
 
 HEADERS  += xmainwindow.h \
     xview.h \
     xnotebrowser.h \
     xzoomwidget.h \
     xscene.h \
-    xdragdropwindow.h
+    xdragdropwindow.h \
+    xnodedata.h \
+    xdatabase.h
 
 FORMS    += xmainwindow.ui \
     xzoomwidget.ui \
