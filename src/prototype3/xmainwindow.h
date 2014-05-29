@@ -7,6 +7,8 @@ namespace Ui {
 class XMainWindow;
 }
 
+struct XMainWindowImpl;
+
 class XMainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -16,7 +18,8 @@ public:
     ~XMainWindow();
 
 private:
-    Ui::XMainWindow *ui;
+    Ui::XMainWindow *_ui;
+    XMainWindowImpl *_impl;
 };
 
 #endif // XMAINWINDOW_H

@@ -13,8 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        xmainwindow.cpp
+        xmainwindow.cpp \
+    xview.cpp \
+    xnotebrowser.cpp \
+    xzoomwidget.cpp \
+    xscene.cpp
 
-HEADERS  += xmainwindow.h
+HEADERS  += xmainwindow.h \
+    xview.h \
+    xnotebrowser.h \
+    xzoomwidget.h \
+    xscene.h
 
-FORMS    += xmainwindow.ui
+FORMS    += xmainwindow.ui \
+    xzoomwidget.ui
