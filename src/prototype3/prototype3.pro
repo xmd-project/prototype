@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     xscene.cpp \
     xdragdropwindow.cpp \
     xnodedata.cpp \
-    xdatabase.cpp
+    xdatabase.cpp \
+    xnode.cpp
 
 HEADERS  += xmainwindow.h \
     xview.h \
@@ -29,7 +30,8 @@ HEADERS  += xmainwindow.h \
     xscene.h \
     xdragdropwindow.h \
     xnodedata.h \
-    xdatabase.h
+    xdatabase.h \
+    xnode.h
 
 FORMS    += xmainwindow.ui \
     xzoomwidget.ui \
