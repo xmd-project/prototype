@@ -16,7 +16,7 @@ public: // pure virtual
     QRectF boundingRect() const;
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0);
 public: // virtual
-    QPainterPath shape() const; ///< virtual
+    QPainterPath shape() const;
 
 private:
     XNodeImpl *_impl;

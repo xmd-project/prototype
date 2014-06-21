@@ -1,25 +1,32 @@
 #include "xnode.h"
-#include "xnodedata.h"
+#include "xid.h"
+#include "xtextdocument.h"
 
 struct XNodeImpl
 {
     XNodeImpl();
     ~XNodeImpl();
 
+    XId *_id;
+    XTextDocument *_doc;
     QGraphicsItem *_graphics;
-    XNodeData *_data;
 };
 
-XNodeImpl::XNodeImpl() : _graphics(0), _data(0)
+XNodeImpl::XNodeImpl() :
+    _id(new XId),
+    _doc(0),
+    _graphics(0)
 {
 }
 
 XNodeImpl::~XNodeImpl()
 {
+    delete _id;
+    if (_doc)
+        delete _doc;
     if (_graphics)
         delete _graphics;
-    if (_data)
-        delete _data;
+
 }
 
 XNode::XNode() : _impl(new XNodeImpl)
@@ -30,7 +37,7 @@ void XNode::setGraphics(QGraphicsItem *graphics)
 {
     Q_ASSERT(graphics);
     if (_impl->_graphics)
-        delete _impl->_graphics; // destroy obsolete graphics
+        delete _impl->_graphics; // destroy last graphics
     _impl->_graphics = graphics;
 }
 

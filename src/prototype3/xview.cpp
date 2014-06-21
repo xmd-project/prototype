@@ -1,5 +1,6 @@
 #include "xview.h"
 #include "xzoomwidget.h"
+#include "xid.h"
 #include <QGraphicsProxyWidget>
 #include <limits>
 
@@ -7,6 +8,8 @@ struct XViewImpl
 {
     XViewImpl();
     ~XViewImpl();
+
+    QList<XId *> *_xsceneIdStack;
     QGraphicsProxyWidget *_proxyZoomWidget; ///< always on top
 };
 
@@ -38,5 +41,6 @@ void XView::setScene(QGraphicsScene *scene)
     _impl->_proxyZoomWidget = scene->addWidget(new XZoomWidget);
     // make sure the zoomWidget is always on top of the scene
     _impl->_proxyZoomWidget->setZValue(std::numeric_limits<qreal>::max());
+
     QGraphicsView::setScene(scene);
 }

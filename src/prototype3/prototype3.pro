@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     xdragdropwindow.cpp \
     xnodedata.cpp \
     xdatabase.cpp \
-    xnode.cpp
+    xnode.cpp \
+    xtextdocument.cpp
 
 HEADERS  += xmainwindow.h \
     xview.h \
@@ -31,7 +32,9 @@ HEADERS  += xmainwindow.h \
     xdragdropwindow.h \
     xnodedata.h \
     xdatabase.h \
-    xnode.h
+    xnode.h \
+    xid.h \
+    xtextdocument.h
 
 FORMS    += xmainwindow.ui \
     xzoomwidget.ui \

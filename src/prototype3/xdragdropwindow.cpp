@@ -1,14 +1,32 @@
 #include "xdragdropwindow.h"
 #include "ui_xdragdropwindow.h"
 
-XDragDropWindow::XDragDropWindow(QWidget *parent) :
-    QMainWindow(parent),
+struct XDragDropWindowImpl
+{
+    XDragDropWindowImpl();
+    ~XDragDropWindowImpl();
+
+    Ui::XDragDropWindow *_ui;
+};
+
+XDragDropWindowImpl::XDragDropWindowImpl() :
     _ui(new Ui::XDragDropWindow)
 {
-    _ui->setupUi(this);
+}
+
+XDragDropWindowImpl::~XDragDropWindowImpl()
+{
+    delete _ui;
+}
+
+XDragDropWindow::XDragDropWindow(QWidget *parent) :
+    QMainWindow(parent),
+    _impl(new XDragDropWindowImpl)
+{
+    _impl->_ui->setupUi(this);
 }
 
 XDragDropWindow::~XDragDropWindow()
 {
-    delete _ui;
+    delete _impl;
 }

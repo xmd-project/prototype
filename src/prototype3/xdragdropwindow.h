@@ -3,9 +3,7 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class XDragDropWindow;
-}
+struct XDragDropWindowImpl;
 
 class XDragDropWindow : public QMainWindow
 {
@@ -16,7 +14,7 @@ public:
     ~XDragDropWindow();
 
 private:
-    Ui::XDragDropWindow *_ui;
+    XDragDropWindowImpl *_impl;
 };
 
 #endif // XDRAGDROPWINDOW_H
