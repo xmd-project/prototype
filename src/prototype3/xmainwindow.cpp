@@ -12,7 +12,7 @@ struct XMainWindowImpl
 {
     XMainWindowImpl();
     ~XMainWindowImpl();
-    void setup(QMainWindow *mainwindow);
+    void setup();
 
     Ui::XMainWindow *_ui;
     XNoteBrowser *_xnoteBrowser;
@@ -45,10 +45,8 @@ XMainWindowImpl::~XMainWindowImpl()
     delete _ui;
 }
 
-void XMainWindowImpl::setup(QMainWindow *mainwindow)
+void XMainWindowImpl::setup()
 {
-    Q_ASSERT(mainwindow);
-    _ui->setupUi(mainwindow);
     // TODO: set up all subobjects
 }
 
@@ -56,7 +54,7 @@ XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
     _impl(new XMainWindowImpl)
 {
-    _impl->setup(this);
+    _impl->_ui->setupUi(this);
 }
 
 XMainWindow::~XMainWindow()
