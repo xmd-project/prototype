@@ -3,10 +3,6 @@
 
 #include <QMainWindow>
 
-namespace Ui {
-class XMainWindow;
-}
-
 struct XMainWindowImpl;
 
 class XMainWindow : public QMainWindow
@@ -18,7 +14,6 @@ public:
     ~XMainWindow();
 
 private:
-    Ui::XMainWindow *_ui;
     XMainWindowImpl *_impl;
 };
 

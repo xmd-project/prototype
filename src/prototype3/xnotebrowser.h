@@ -3,6 +3,8 @@
 
 #include <QTextBrowser>
 
+struct XNoteBrowserImpl;
+
 class XNoteBrowser : public QTextBrowser
 {
     Q_OBJECT
@@ -12,6 +14,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    XNoteBrowserImpl *_impl;
 
 };
 

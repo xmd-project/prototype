@@ -12,10 +12,10 @@ struct XMainWindowImpl
 {
     XMainWindowImpl();
     ~XMainWindowImpl();
-    void setup();
+    void setup(QMainWindow *mainwindow);
 
+    Ui::XMainWindow *_ui;
     XNoteBrowser *_xnoteBrowser;
-
     QList<QTabWidget *>_tabWidget;
 
     enum _ToolBarType { // DO NOT modify any of the following values!
@@ -35,29 +35,31 @@ struct XMainWindowImpl
     QAction *_action[NUM_TOOLBARS];
 };
 
-XMainWindowImpl::XMainWindowImpl()
+XMainWindowImpl::XMainWindowImpl() :
+    _ui(new Ui::XMainWindow)
 {
 }
 
 XMainWindowImpl::~XMainWindowImpl()
 {
+    delete _ui;
 }
 
-void XMainWindowImpl::setup()
+void XMainWindowImpl::setup(QMainWindow *mainwindow)
 {
+    Q_ASSERT(mainwindow);
+    _ui->setupUi(mainwindow);
+    // TODO: set up all subobjects
 }
 
 XMainWindow::XMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    _ui(new Ui::XMainWindow),
     _impl(new XMainWindowImpl)
 {
-    _ui->setupUi(this);
-    _impl->setup();
+    _impl->setup(this);
 }
 
 XMainWindow::~XMainWindow()
 {
-    delete _ui;
     delete _impl;
 }
