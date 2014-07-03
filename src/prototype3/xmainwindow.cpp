@@ -22,7 +22,7 @@ struct XMainWindowImpl
         FILE, EDIT, CLIPBOARD, INSERT, ARRANGE, // and so on
         NUM_TOOLBARS // NUM_TOOLBARS must be the last element! It indicates how many toolbars there are.
     };
-    QTabBar *_toolbar[NUM_TOOLBARS];
+    QToolBar *_toolbar[NUM_TOOLBARS];
 
     enum _ActionType { // DO NOT modify any of the following values!
         SAVE, SAVEAS, OPEN,
